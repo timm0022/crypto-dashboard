@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Dashboard v3 - Strategy Edition</title>
+    <style>
+        /* CSS стили остались те же, что и в pro-crypto-trading-dashboard.html */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --primary: #6366f1; --primary-dark: #4f46e5; --success: #22c55e; --danger: #ef4444; --warning: #f59e0b; --dark: #1e293b; --light: #f8fafc; --gray: #64748b; --card-bg: #ffffff; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); min-height: 100vh; color: var(--dark); }
+        .dashboard { max-width: 1800px; margin: 0 auto; padding: 20px; }
+        .header { background: var(--card-bg); border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 28px; font-weight: 700; color: var(--dark); }
+        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; }
+        .header-actions { display: flex; gap: 12px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .btn-outline { background: transparent; border: 2px solid var(--gray); color: var(--gray); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn.loading { cursor: not-allowed; opacity: 0.7; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        .stat-card { background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .stat-label { font-size: 12px; color: var(--gray); margin-bottom: 4px; font-weight: 500; }
+        .stat-value { font-size: 24px; font-weight: 700; color: var(--dark); }
+        .stat-change { font-size: 12px; margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 4px; }
+        .stat-change.positive { color: var(--success); background: rgba(34, 197, 94, 0.1); }
+        .stat-change.negative { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+        .main-grid { display: grid; grid-template-columns: 1fr 400px; gap: 24px; margin-top: 24px; }
+        @media (max-width: 1200px) { .main-grid { grid-template-columns: 1fr; } }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card-title { font-size: 18px; font-weight: 600; color: var(--dark); }
+        .portfolio-table { width: 100%; overflow-x: auto; }
+        .portfolio-table table { width: 100%; border-collapse: collapse; }
+        .portfolio-table th { text-align: left; padding: 12px; font-size: 12px; font-weight: 600; color: var(--gray); border-bottom: 2px solid #f1f5f9; white-space: nowrap; }
+        .portfolio-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .token-info { display: flex; align-items: center; gap: 12px; }
+        .token-icon { width: 36px; height: 36px; border-radius: 50%; }
+        .token-details { display: flex; flex-direction: column; }
+        .token-symbol { font-weight: 600; color: var(--dark); }
+        .token-name { font-size: 12px; color: var(--gray); }
+        .price-cell { text-align: right; }
+        .current-price { font-weight: 600; color: var(--dark); }
+        .pnl { text-align: right; font-weight: 600; }
+        .pnl.positive { color: var(--success); }
+        .pnl.negative { color: var(--danger); }
+        .strategy-details { font-size: 13px; }
+        .strategy-details .stop-loss { color: var(--danger); font-weight: 600; margin-bottom: 5px; }
+        .strategy-details .dca-item { color: var(--primary); }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; animation: fadeIn 0.2s; }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: var(--card-bg); border-radius: 16px; padding: 24px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-title { font-size: 20px; font-weight: 600; }
+        .modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: #f1f5f9; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--gray); }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 14px; font-weight: 500; color: var(--dark); margin-bottom: 6px; }
+        .form-input { width: 100%; padding: 10px 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; }
+        .form-input:focus { outline: none; border-color: var(--primary); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .input-group { display: flex; align-items: center; gap: 8px; }
+        #searchResults { max-height: 150px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; margin-top: 8px; }
+        .search-result-item { display: flex; align-items: center; padding: 8px; cursor: pointer; gap: 10px; }
+        .search-result-item:hover { background-color: #f8fafc; }
+        .search-result-item img { width: 24px; height: 24px; border-radius: 50%; }
+        .dca-editor { border: 2px solid #e2e8f0; border-radius: 8px; padding: 12px; background: #f8fafc; }
+        .dca-row { display: grid; grid-template-columns: 1fr 1fr 40px; gap: 8px; align-items: center; margin-bottom: 8px; }
+        .dca-input { padding: 6px 8px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 14px; background: white; width: 100%; }
+        .remove-dca-btn { padding: 4px; background: var(--danger); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; line-height: 1; height: 30px; }
+        .add-dca-btn { width: 100%; margin-top: 8px; background: var(--primary); color: white; }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 16px 20px; background: var(--success); color: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; animation: slideInRight 0.3s; z-index: 2000; }
+        .notification.show { display: block; }
+        .notification.error { background: var(--danger); }
+        .notification.warning { background: var(--warning); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <div class="header">
+             <div class="header-top">
+                <div class="logo">
+                    <div class="logo-icon">📈</div>
+                    <span>Trading Dashboard</span>
+                </div>
+                <div class="header-actions">
+                    <button id="syncButton" class="btn btn-outline" onclick="syncPrices()">🔄 Обновить цены</button>
+                    <button class="btn btn-primary" onclick="openAddTokenModal()">+ Добавить токен</button>
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-label">Общий баланс</div><div class="stat-value" id="totalBalance">$0.00</div></div>
+                <div class="stat-card"><div class="stat-label">Инвестировано</div><div class="stat-value" id="totalInvested">$0.00</div></div>
+                <div class="stat-card"><div class="stat-label">P&L</div><div class="stat-value" id="totalPnL">$0.00</div><div class="stat-change" id="pnlChange">0%</div></div>
+                <div class="stat-card"><div class="stat-label">Токенов</div><div class="stat-value" id="tokenCount">0</div></div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="card">
+            <div class="card-header"><h2 class="card-title">Портфель</h2></div>
+            <div class="portfolio-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Токен</th>
+                            <th>Количество</th>
+                            <th>Ср. цена входа</th>
+                            <th>Текущая цена</th>
+                            <th>Стратегия</th>
+                            <th>P&L</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="portfolioTableBody">
+                         <tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--gray);">Портфель пуст.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add/Edit Token Modal -->
+    <div class="modal" id="tokenModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Добавить токен</h3>
+                <button class="modal-close" onclick="closeModal('tokenModal')">×</button>
+            </div>
+            <form id="tokenForm" onsubmit="saveToken(event)">
+                <input type="hidden" id="editTokenId">
+
+                <div id="searchSection">
+                    <div class="form-group">
+                        <label class="form-label">Поиск токена</label>
+                        <div class="input-group">
+                            <input type="text" class="form-input" id="tokenSearch" placeholder="Напр. BTC, Ethereum..." autocomplete="off">
+                            <button type="button" class="btn btn-primary" onclick="searchTokens()">Найти</button>
+                        </div>
+                        <div id="searchResults"></div>
+                    </div>
+                </div>
+
+                <input type="hidden" id="coingeckoId">
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">Символ</label><input type="text" class="form-input" id="tokenSymbol" readonly required></div>
+                    <div class="form-group"><label class="form-label">Название</label><input type="text" class="form-input" id="tokenName" readonly required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label class="form-label">Количество</label><input type="number" step="any" class="form-input" id="tokenAmount" required></div>
+                    <div class="form-group"><label class="form-label">Цена покупки ($)</label><input type="number" step="any" class="form-input" id="tokenBuyPrice" required></div>
+                </div>
+                <div class="form-group"><label class="form-label">Стоп-лосс ($)</label><input type="number" step="any" class="form-input" id="tokenStopLoss" placeholder="Напр. 60000"></div>
+                
+                <div class="form-group">
+                    <label class="form-label">План DCA</label>
+                    <div class="dca-editor" id="dcaEditor"></div>
+                    <button type="button" class="btn btn-sm add-dca-btn" onclick="addDcaRow()">+ Добавить транш</button>
+                </div>
+                
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Сохранить</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('tokenModal')" style="flex: 1;">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+    
+    <script>
+        let portfolio = [];
+        let nextTokenId = 1;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            updateDisplay();
+            syncPrices();
+        });
+
+        // --- MODAL & FORM ---
+        function openAddTokenModal() {
+            document.getElementById('tokenForm').reset();
+            document.getElementById('editTokenId').value = '';
+            document.getElementById('modalTitle').textContent = 'Добавить токен';
+            document.getElementById('searchSection').style.display = 'block';
+            document.getElementById('dcaEditor').innerHTML = '';
+            document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('tokenModal').classList.add('active');
+        }
+
+        function openEditTokenModal(tokenId) {
+            const token = portfolio.find(t => t.id === tokenId);
+            if (!token) return;
+
+            document.getElementById('tokenForm').reset();
+            document.getElementById('modalTitle').textContent = 'Изменить токен';
+            document.getElementById('searchSection').style.display = 'none';
+
+            document.getElementById('editTokenId').value = token.id;
+            document.getElementById('coingeckoId').value = token.coingeckoId;
+            document.getElementById('tokenSymbol').value = token.symbol;
+            document.getElementById('tokenSymbol').dataset.iconUrl = token.iconUrl;
+            document.getElementById('tokenName').value = token.name;
+            document.getElementById('tokenAmount').value = token.amount;
+            document.getElementById('tokenBuyPrice').value = token.avgPrice;
+            document.getElementById('tokenStopLoss').value = token.stopLoss || '';
+
+            const dcaEditor = document.getElementById('dcaEditor');
+            dcaEditor.innerHTML = '';
+            if (token.dcaPlan) {
+                token.dcaPlan.forEach(dca => addDcaRow(dca.condition, dca.amount));
+            }
+
+            document.getElementById('tokenModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function addDcaRow(condition = '', amount = '') {
+            const editor = document.getElementById('dcaEditor');
+            const row = document.createElement('div');
+            row.className = 'dca-row';
+            row.innerHTML = `
+                <input type="text" class="dca-input" placeholder="Условие (напр. < 1.5$)" value="${condition}">
+                <input type="number" step="any" class="dca-input" placeholder="Сумма ($)" value="${amount}">
+                <button type="button" class="remove-dca-btn" onclick="this.parentElement.remove()">×</button>
+            `;
+            editor.appendChild(row);
+        }
+
+        function saveToken(event) {
+            event.preventDefault();
+            const editId = document.getElementById('editTokenId').value;
+            if (editId) {
+                // --- EDIT LOGIC ---
+                const token = portfolio.find(t => t.id === parseInt(editId));
+                if (token) {
+                    token.amount = parseFloat(document.getElementById('tokenAmount').value);
+                    token.avgPrice = parseFloat(document.getElementById('tokenBuyPrice').value);
+                    token.totalInvested = token.amount * token.avgPrice;
+                    token.stopLoss = parseFloat(document.getElementById('tokenStopLoss').value) || 0;
+                    
+                    token.dcaPlan = [];
+                    document.querySelectorAll('#dcaEditor .dca-row').forEach(row => {
+                        const condition = row.children[0].value;
+                        const amount = parseFloat(row.children[1].value);
+                        if (condition && amount > 0) {
+                            token.dcaPlan.push({ condition, amount });
+                        }
+                    });
+                    showNotification('Токен успешно обновлен!', 'success');
+                }
+            } else {
+                // --- ADD LOGIC ---
+                 const coingeckoId = document.getElementById('coingeckoId').value;
+                if (!coingeckoId) {
+                    showNotification('Пожалуйста, найдите и выберите токен.', 'warning');
+                    return;
+                }
+
+                const token = {
+                    id: nextTokenId++,
+                    coingeckoId: coingeckoId,
+                    symbol: document.getElementById('tokenSymbol').value,
+                    name: document.getElementById('tokenName').value,
+                    iconUrl: document.getElementById('tokenSymbol').dataset.iconUrl,
+                    amount: parseFloat(document.getElementById('tokenAmount').value),
+                    avgPrice: parseFloat(document.getElementById('tokenBuyPrice').value),
+                    currentPrice: parseFloat(document.getElementById('tokenBuyPrice').value),
+                    totalInvested: parseFloat(document.getElementById('tokenAmount').value) * parseFloat(document.getElementById('tokenBuyPrice').value),
+                    stopLoss: parseFloat(document.getElementById('tokenStopLoss').value) || 0,
+                    dcaPlan: []
+                };
+
+                document.querySelectorAll('#dcaEditor .dca-row').forEach(row => {
+                    const condition = row.children[0].value;
+                    const amount = parseFloat(row.children[1].value);
+                    if (condition && amount > 0) {
+                        token.dcaPlan.push({ condition, amount });
+                    }
+                });
+
+                portfolio.push(token);
+                showNotification(`${token.symbol} добавлен в портфель`);
+                syncPrices();
+            }
+
+            closeModal('tokenModal');
+            updateDisplay();
+            saveData();
+        }
+
+        // --- API & DATA FUNCTIONS (searchTokens, syncPrices, removeToken are the same as v2) ---
+        async function searchTokens() {
+            const query = document.getElementById('tokenSearch').value;
+            const resultsDiv = document.getElementById('searchResults');
+            if (!query) return;
+            resultsDiv.innerHTML = 'Идет поиск...';
+            try {
+                const response = await fetch(`https://api.coingecko.com/api/v3/search?query=${query}`);
+                if (!response.ok) throw new Error('API request failed');
+                const data = await response.json();
+                resultsDiv.innerHTML = '';
+                if (data.coins.length === 0) {
+                    resultsDiv.innerHTML = 'Ничего не найдено.';
+                    return;
+                }
+                data.coins.slice(0, 10).forEach(coin => {
+                    const item = document.createElement('div');
+                    item.className = 'search-result-item';
+                    item.onclick = () => selectToken(coin.id, coin.symbol.toUpperCase(), coin.name, coin.thumb);
+                    item.innerHTML = `<img src="${coin.thumb}" alt="${coin.name} icon"><span><strong>${coin.symbol.toUpperCase()}</strong> - ${coin.name}</span>`;
+                    resultsDiv.appendChild(item);
+                });
+            } catch (error) {
+                resultsDiv.innerHTML = 'Ошибка при поиске.';
+                showNotification('Не удалось выполнить поиск.', 'error');
+            }
+        }
+
+        function selectToken(id, symbol, name, iconUrl) {
+            document.getElementById('coingeckoId').value = id;
+            document.getElementById('tokenSymbol').value = symbol;
+            document.getElementById('tokenName').value = name;
+            document.getElementById('tokenSymbol').dataset.iconUrl = iconUrl;
+            document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('tokenSearch').value = `${name} (${symbol})`;
+        }
+
+        async function syncPrices() {
+            if (portfolio.length === 0) return;
+            const syncButton = document.getElementById('syncButton');
+            syncButton.classList.add('loading');
+            syncButton.textContent = '🔄 Обновление...';
+            syncButton.disabled = true;
+
+            const ids = portfolio.map(token => token.coingeckoId).join(',');
+            const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const prices = await response.json();
+                portfolio.forEach(token => {
+                    if (prices[token.coingeckoId] && prices[token.coingeckoId].usd) {
+                        token.currentPrice = prices[token.coingeckoId].usd;
+                    }
+                });
+                showNotification('Цены успешно обновлены!', 'success');
+            } catch (error) {
+                showNotification('Не удалось обновить цены.', 'error');
+            } finally {
+                updateDisplay();
+                saveData();
+                syncButton.classList.remove('loading');
+                syncButton.textContent = '🔄 Обновить цены';
+                syncButton.disabled = false;
+            }
+        }
+        
+        function removeToken(tokenId) {
+            if(confirm('Вы уверены, что хотите удалить этот токен?')) {
+                portfolio = portfolio.filter(t => t.id !== tokenId);
+                updateDisplay();
+                saveData();
+                showNotification('Токен удален.', 'success');
+            }
+        }
+
+        // --- UI & DISPLAY ---
+        function updateDisplay() {
+            updatePortfolioTable();
+            updateStats();
+        }
+
+        function updatePortfolioTable() {
+            const tbody = document.getElementById('portfolioTableBody');
+            if (portfolio.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--gray);">Портфель пуст.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = portfolio.map(token => {
+                const currentValue = token.amount * token.currentPrice;
+                const pnl = currentValue - token.totalInvested;
+                const pnlPercent = token.totalInvested > 0 ? (pnl / token.totalInvested * 100) : 0;
+                
+                const stopLossHtml = token.stopLoss > 0 ? `<div class="stop-loss">SL: $${token.stopLoss}</div>` : '';
+                const dcaPlanHtml = token.dcaPlan && token.dcaPlan.length > 0
+                    ? token.dcaPlan.map(dca => `<div class="dca-item">DCA: ${dca.condition} (${dca.amount}$)</div>`).join('')
+                    : '<div>Нет плана DCA</div>';
+
+                return `
+                    <tr>
+                        <td><div class="token-info"><img src="${token.iconUrl}" class="token-icon" alt="${token.name} icon"><div class="token-details"><div class="token-symbol">${token.symbol}</div><div class="token-name">${token.name}</div></div></div></td>
+                        <td>${token.amount.toLocaleString('en-US', {maximumFractionDigits: 6})}</td>
+                        <td class="price-cell"><div class="current-price">$${token.avgPrice.toLocaleString('en-US', {maximumFractionDigits: 2})}</div></td>
+                        <td class="price-cell"><div class="current-price">$${token.currentPrice.toLocaleString('en-US', {maximumFractionDigits: 2})}</div></td>
+                        <td><div class="strategy-details">${stopLossHtml}${dcaPlanHtml}</div></td>
+                        <td class="pnl ${pnl >= 0 ? 'positive' : 'negative'}"><div>$${pnl.toLocaleString('en-US', {maximumFractionDigits: 2})}</div><div>${pnl >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%</div></td>
+                        <td>
+                            <div style="display: flex; gap: 4px;">
+                                <button class="btn btn-sm btn-warning" onclick="openEditTokenModal(${token.id})">Изменить</button>
+                                <button class="btn btn-sm btn-danger" onclick="removeToken(${token.id})">Удалить</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateStats() {
+            let totalInvested = portfolio.reduce((sum, token) => sum + token.totalInvested, 0);
+            let totalValue = portfolio.reduce((sum, token) => sum + (token.amount * token.currentPrice), 0);
+            const totalPnL = totalValue - totalInvested;
+            const pnlPercent = totalInvested > 0 ? (totalPnL / totalInvested * 100) : 0;
+
+            document.getElementById('totalBalance').textContent = `$${totalValue.toLocaleString('en-US', {maximumFractionDigits: 2})}`;
+            document.getElementById('totalInvested').textContent = `$${totalInvested.toLocaleString('en-US', {maximumFractionDigits: 2})}`;
+            document.getElementById('totalPnL').textContent = `$${totalPnL.toLocaleString('en-US', {maximumFractionDigits: 2})}`;
+            document.getElementById('tokenCount').textContent = portfolio.length;
+            
+            const pnlChangeEl = document.getElementById('pnlChange');
+            pnlChangeEl.textContent = `${pnlPercent.toFixed(2)}%`;
+            pnlChangeEl.className = `stat-change ${pnlPercent >= 0 ? 'positive' : 'negative'}`;
+            if(pnlPercent >= 0) pnlChangeEl.textContent = `+${pnlChangeEl.textContent}`;
+        }
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification show ${type}`;
+            setTimeout(() => notification.classList.remove('show'), 3000);
+        }
+
+        // --- LOCAL STORAGE ---
+        function saveData() {
+            localStorage.setItem('cryptoDashboardV3', JSON.stringify({ portfolio, nextTokenId }));
+        }
+
+        function loadData() {
+            // Try loading new V3 data first
+            let saved = localStorage.getItem('cryptoDashboardV3');
+            if (saved) {
+                const data = JSON.parse(saved);
+                portfolio = data.portfolio || [];
+                nextTokenId = data.nextTokenId || 1;
+                return;
+            }
+            // Fallback for V2 data for seamless upgrade
+            saved = localStorage.getItem('tradingDashboardDataV2');
+             if (saved) {
+                const data = JSON.parse(saved);
+                // Add new fields to old data
+                portfolio = (data.portfolio || []).map(token => ({
+                    ...token,
+                    stopLoss: 0,
+                    dcaPlan: []
+                }));
+                nextTokenId = data.nextTokenId || 1;
+                saveData(); // Save in the new format
+            }
+        }
+    </script>
+</body>
+</html>
