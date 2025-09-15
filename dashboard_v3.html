@@ -3,148 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Crypto Dashboard v4</title>
+    <title>Crypto Dashboard v5</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --primary: #6366f1; --primary-dark: #4f46e5; --success: #22c55e;
             --danger: #ef4444; --warning: #f59e0b; --gray: #64748b;
-            --card-bg: #ffffff; --bg-color: #f1f5f9; --text-color: #1e293b;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-color); color: var(--text-color);
-            padding: 15px; -webkit-font-smoothing: antialiased;
-        }
-        .dashboard { max-width: 600px; margin: 0 auto; }
-        .header { background: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .logo { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-        .header-actions { display: flex; gap: 10px; }
-        .btn { padding: 10px 15px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-outline { background: transparent; border: 2px solid var(--gray); color: var(--gray); }
-        .btn-warning { background: var(--warning); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn.loading { cursor: not-allowed; opacity: 0.7; }
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
-        .stat-card { background: var(--bg-color); padding: 12px; border-radius: 12px; }
-        .stat-label { font-size: 12px; color: var(--gray); margin-bottom: 4px; }
-        .stat-value { font-size: 18px; font-weight: 700; }
-        .portfolio-cards { display: flex; flex-direction: column; gap: 15px; }
-        .token-card { background: var(--card-bg); border-radius: 16px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .token-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
-        .token-icon { width: 40px; height: 40px; border-radius: 50%; }
-        .token-info { flex-grow: 1; }
-        .token-symbol { font-weight: 600; font-size: 16px; }
-        .token-name { font-size: 13px; color: var(--gray); }
-        .token-pnl { text-align: right; font-weight: 600; font-size: 14px; }
-        .token-pnl.positive { color: var(--success); }
-        .token-pnl.negative { color: var(--danger); }
-        .token-card-body { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--bg-color); }
-        .data-point { display: flex; flex-direction: column; gap: 2px; }
-        .data-label { font-size: 12px; color: var(--gray); }
-        .data-value { font-weight: 600; font-size: 14px; }
-        .strategy-details { grid-column: 1 / -1; margin-top: 10px; }
-        .strategy-details .stop-loss { color: var(--danger); font-weight: 600; font-size: 13px; }
-        .strategy-details .dca-item { color: var(--primary); font-size: 13px; }
-        .token-card-actions { margin-top: 15px; display: flex; gap: 10px; }
-        #portfolioPlaceholder { text-align: center; padding: 40px; color: var(--gray); background: var(--card-bg); border-radius: 16px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; animation: fadeIn 0.2s; }
-        .modal.active { display: flex; align-items: center; justify-content: center; padding: 15px; }
-        .modal-content { background: var(--card-bg); border-radius: 16px; padding: 24px; max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-title { font-size: 20px; font-weight: 600; }
-        .modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: var(--bg-color); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--gray); }
-        .form-group { margin-bottom: 16px; }
-        .form-label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
-        .form-input { width: 100%; padding: 10px 12px; border: 2px solid var(--bg-color); border-radius: 8px; font-size: 14px; background: transparent; color: var(--text-color); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .input-group { display: flex; align-items: center; gap: 8px; }
-        #searchResults { max-height: 150px; overflow-y: auto; border: 1px solid var(--bg-color); border-radius: 8px; margin-top: 8px; }
-        .search-result-item { display: flex; align-items: center; padding: 8px; cursor: pointer; gap: 10px; }
-        .search-result-item:hover { background-color: var(--bg-color); }
-        .search-result-item img { width: 24px; height: 24px; border-radius: 50%; }
-        .dca-editor { border: 2px solid var(--bg-color); border-radius: 8px; padding: 12px; }
-        .dca-row { display: grid; grid-template-columns: 1fr 1fr 40px; gap: 8px; align-items: center; margin-bottom: 8px; }
-        .dca-input { padding: 6px 8px; border: 1px solid var(--bg-color); border-radius: 4px; font-size: 14px; background: var(--card-bg); color: var(--text-color); width: 100%; }
-        .remove-dca-btn { padding: 4px; background: var(--danger); color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; line-height: 1; height: 30px; }
-        .add-dca-btn { width: 100%; margin-top: 8px; background: var(--primary); color: white; }
-        .notification { position: fixed; top: 20px; right: 20px; padding: 16px 20px; background: var(--success); color: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; animation: slideInRight 0.3s; z-index: 2000; }
-        .notification.show { display: block; } .notification.error { background: var(--danger); } .notification.warning { background: var(--warning); }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-    </style>
-</head>
-<body>
-    <div class="dashboard">
-        <div class="header">
-            <div class="header-top">
-                <div class="logo">📈 Trading Dashboard</div>
-                <div class="header-actions">
-                    <button id="syncButton" class="btn btn-outline" onclick="syncPrices()">Обновить</button>
-                    <button class="btn btn-primary" onclick="openAddTokenModal()">Добавить</button>
-                </div>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-card"><div class="stat-label">Общий баланс</div><div class="stat-value" id="totalBalance">$0.00</div></div>
-                <div class="stat-card"><div class="stat-label">Инвестировано</div><div class="stat-value" id="totalInvested">$0.00</div></div>
-                <div class="stat-card"><div class="stat-label">P&L ($)</div><div class="stat-value" id="totalPnL">$0.00</div></div>
-                <div class="stat-card"><div class="stat-label">P&L (%)</div><div class="stat-value" id="pnlChange">0%</div></div>
-            </div>
-        </div>
-        <div class="portfolio-cards" id="portfolioCards">
-            <div id="portfolioPlaceholder">Портфель пуст. Добавьте первый токен.</div>
-        </div>
-    </div>
-
-    <!-- Add/Edit Token Modal -->
-    <div class="modal" id="tokenModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Добавить токен</h3>
-                <button class="modal-close" onclick="closeModal('tokenModal')">×</button>
-            </div>
-            <form id="tokenForm" onsubmit="saveToken(event)">
-                <input type="hidden" id="editTokenId">
-                <div id="searchSection">
-                    <div class="form-group">
-                        <label class="form-label">Поиск токена</label>
-                        <div class="input-group">
-                            <input type="text" class="form-input" id="tokenSearch" placeholder="Напр. BTC, Ethereum..." autocomplete="off">
-                            <button type="button" class="btn btn-primary" onclick="searchTokens()">Найти</button>
-                        </div>
-                        <div id="searchResults"></div>
-                    </div>
-                </div>
-                <input type="hidden" id="coingeckoId">
-                <div class="form-row">
-                    <div class="form-group"><label class="form-label">Символ</label><input type="text" class="form-input" id="tokenSymbol" readonly required></div>
-                    <div class="form-group"><label class="form-label">Название</label><input type="text" class="form-input" id="tokenName" readonly required></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label class="form-label">Количество</label><input type="number" step="any" class="form-input" id="tokenAmount" required></div>
-                    <div class="form-group"><label class="form-label">Цена покупки ($)</label><input type="number" step="any" class="form-input" id="tokenBuyPrice" required></div>
-                </div>
-                <div class="form-group"><label class="form-label">Стоп-лосс ($)</label><input type="number" step="any" class="form-input" id="tokenStopLoss" placeholder="Напр. 60000"></div>
-                <div class="form-group">
-                    <label class="form-label">План DCA</label>
-                    <div class="dca-editor" id="dcaEditor"></div>
-                    <button type="button" class="btn btn-sm add-dca-btn" onclick="addDcaRow()">+ Добавить транш</button>
-                </div>
-                <div style="display: flex; gap: 12px; margin-top: 20px;">
-                    <button type="submit" class="btn btn-primary" style="flex: 1;">Сохранить</button>
-                    <button type="button" class="btn btn-outline" onclick="closeModal('tokenModal')" style="flex: 1;">Отмена</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <div class="notification" id="notification"></div>
-    
-    <script>
-        // <!-- ### ПОЛНЫЙ JS-КОД ИЗ V3 ТЕПЕРЬ ЗДЕСЬ ### -->
+            --card-bg: #ffffff; --bg-color: #f1f5f9; --text-color: #1e2_sub --><!-- ### ПОЛНЫЙ JS-КОД ИЗ V3 ТЕПЕРЬ ЗДЕСЬ ### -->
         let portfolio = [];
         let nextTokenId = 1;
 
@@ -153,6 +18,7 @@
             try {
                 const tg = window.Telegram.WebApp;
                 tg.ready();
+                tg.expand();
                 
                 const root = document.documentElement;
                 if (tg.colorScheme === 'dark') {
@@ -162,8 +28,10 @@
                     root.style.setProperty('--gray', '#7a8999');
                 }
                 
-                tg.BackButton.show();
-                tg.BackButton.onClick(() => tg.close());
+                if (tg.BackButton.isVisible) {
+                    tg.BackButton.hide();
+                }
+                
             } catch (e) {
                 console.error("Telegram WebApp script not found or failed.", e);
             }
@@ -312,14 +180,22 @@
             document.getElementById('tokenSearch').value = `${name} (${symbol})`;
         }
 
+        // ### ИСПРАВЛЕННАЯ ФУНКЦИЯ ###
         async function syncPrices() {
-            if (portfolio.length === 0) return;
+            // Вот он, наш "охранник"!
+            if (portfolio.length === 0) {
+                console.log("Портфель пуст, обновление цен не требуется.");
+                return; 
+            }
+
             const syncButton = document.getElementById('syncButton');
             syncButton.classList.add('loading');
             syncButton.textContent = '...';
             syncButton.disabled = true;
+            
             const ids = portfolio.map(token => token.coingeckoId).join(',');
             const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`;
+            
             try {
                 const response = await fetch(url);
                 if (!response.ok) throw new Error('Network response was not ok');
@@ -412,11 +288,12 @@
 
         // --- LOCAL STORAGE ---
         function saveData() {
-            localStorage.setItem('cryptoDashboardV4', JSON.stringify({ portfolio, nextTokenId }));
+            localStorage.setItem('cryptoDashboardV5', JSON.stringify({ portfolio, nextTokenId }));
         }
 
         function loadData() {
-            const saved = localStorage.getItem('cryptoDashboardV4');
+            // Fallback for seamless upgrade
+            let saved = localStorage.getItem('cryptoDashboardV5') || localStorage.getItem('cryptoDashboardV4');
             if (saved) {
                 const data = JSON.parse(saved);
                 portfolio = data.portfolio || [];
