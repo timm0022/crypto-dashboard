@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Crypto Dashboard v6</title>
+    <title>Crypto Dashboard</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -206,12 +206,10 @@
             editor.appendChild(row);
         }
 
-        // ### ИСПРАВЛЕННАЯ ФУНКЦИЯ ###
         async function saveToken(event) {
             event.preventDefault();
             const editId = document.getElementById('editTokenId').value;
-            
-            if (editId) { // Логика редактирования
+            if (editId) {
                 const token = portfolio.find(t => t.id === parseInt(editId));
                 if (token) {
                     token.amount = parseFloat(document.getElementById('tokenAmount').value);
@@ -226,8 +224,8 @@
                     });
                     showNotification('Токен успешно обновлен!', 'success');
                 }
-            } else { // Логика добавления
-                const coingeckoId = document.getElementById('coingeckoId').value;
+            } else {
+                 const coingeckoId = document.getElementById('coingeckoId').value;
                 if (!coingeckoId) {
                     showNotification('Пожалуйста, найдите и выберите токен.', 'warning');
                     return;
@@ -252,10 +250,8 @@
                 portfolio.push(token);
                 showNotification(`${token.symbol} добавлен в портфель`);
             }
-            
             closeModal('tokenModal');
-            // Мы вызываем обновление и сохранение ПОСЛЕ того, как дождались обновления цен
-            await syncPrices(); 
+            await syncPrices();
         }
 
         async function searchTokens() {
@@ -308,7 +304,9 @@
                         token.currentPrice = prices[token.coingeckoId].usd;
                     }
                 });
-                showNotification('Цены успешно обновлены!', 'success');
+                if (document.activeElement !== document.getElementById('tokenSearch')) {
+                    showNotification('Цены успешно обновлены!', 'success');
+                }
             } catch (error) {
                 showNotification('Не удалось обновить цены.', 'error');
             } finally {
@@ -365,54 +363,4 @@
                     </div>
                     <div class="token-card-body">
                         <div class="data-point"><div class="data-label">Кол-во</div><div class="data-value">${token.amount.toLocaleString('en-US', {maximumFractionDigits: 6})}</div></div>
-                        <div class="data-point"><div class="data-label">Ср. цена входа</div><div class="data-value">$${token.avgPrice.toLocaleString('en-US',{maximumFractionDigits: 2})}</div></div>
-                        <div class="data-point"><div class="data-label">Текущая цена</div><div class="data-value">$${token.currentPrice.toLocaleString('en-US',{maximumFractionDigits: 2})}</div></div>
-                        <div class="data-point"><div class="data-label">Стоимость</div><div class="data-value">$${currentValue.toLocaleString('en-US',{maximumFractionDigits: 2})}</div></div>
-                        <div class="data-point strategy-details"><div class="data-label">Стратегия</div>${stopLossHtml}${dcaPlanHtml}</div>
-                    </div>
-                    <div class="token-card-actions">
-                        <button class="btn btn-warning" onclick="openEditTokenModal(${token.id})" style="flex:1;">Изменить</button>
-                        <button class="btn btn-danger" onclick="removeToken(${token.id})" style="flex:1;">Удалить</button>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        function updateStats() {
-            let totalInvested = portfolio.reduce((sum, token) => sum + token.totalInvested, 0);
-            let totalValue = portfolio.reduce((sum, token) => sum + (token.amount * token.currentPrice), 0);
-            const totalPnL = totalValue - totalInvested;
-            const pnlPercent = totalInvested > 0 ? (totalPnL / totalInvested * 100) : 0;
-            document.getElementById('totalBalance').textContent = `$${totalValue.toLocaleString('en-US',{maximumFractionDigits: 2})}`;
-            document.getElementById('totalInvested').textContent = `$${totalInvested.toLocaleString('en-US',{maximumFractionDigits: 2})}`;
-            document.getElementById('totalPnL').textContent = `$${totalPnL.toLocaleString('en-US',{maximumFractionDigits: 2})}`;
-            const pnlChangeEl = document.getElementById('pnlChange');
-            pnlChangeEl.textContent = `${pnlPercent.toFixed(2)}%`;
-            pnlChangeEl.style.color = pnlPercent >= 0 ? 'var(--success)' : 'var(--danger)';
-        }
-        
-        function showNotification(message, type = 'success') {
-            try {
-                window.Telegram.WebApp.HapticFeedback.notificationOccurred(type);
-            } catch (e) { /* ignore */ }
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification show ${type}`;
-            setTimeout(() => notification.classList.remove('show'), 3000);
-        }
-
-        function saveData() {
-            localStorage.setItem('cryptoDashboardV6', JSON.stringify({ portfolio, nextTokenId }));
-        }
-
-        function loadData() {
-            let saved = localStorage.getItem('cryptoDashboardV6') || localStorage.getItem('cryptoDashboardV5') || localStorage.getItem('cryptoDashboardV4');
-            if (saved) {
-                const data = JSON.parse(saved);
-                portfolio = data.portfolio || [];
-                nextTokenId = data.nextTokenId || 1;
-            }
-        }
-    </script>
-</body>
-</html>
+                        <div class="data-point"><div class="data-label">Ср. цена входа</div><div class=
