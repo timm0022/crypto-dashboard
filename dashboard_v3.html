@@ -2,212 +2,207 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CryptoTracker Pro - Smart Portfolio Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Gold-digger - Crypto Portfolio</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { 
             margin: 0; 
             padding: 0; 
             box-sizing: border-box; 
             -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
         
         :root {
+            --tg-theme-bg-color: #ffffff;
+            --tg-theme-text-color: #000000;
+            --tg-theme-hint-color: #999999;
+            --tg-theme-link-color: #2481cc;
+            --tg-theme-button-color: #5288c1;
+            --tg-theme-button-text-color: #ffffff;
+            --tg-theme-secondary-bg-color: #f1f1f1;
+            
             --primary: #6366f1;
             --primary-dark: #4f46e5;
-            --primary-light: #818cf8;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
             --info: #3b82f6;
-            --dark: #0f172a;
-            --dark-secondary: #1e293b;
+            --dark: #1e293b;
             --light: #f8fafc;
             --gray: #64748b;
-            --gray-light: #cbd5e1;
             --card-bg: #ffffff;
             --text-primary: #0f172a;
             --text-secondary: #64748b;
             --border-color: #e2e8f0;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-success: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-            --gradient-danger: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
         
-        [data-theme="dark"] {
-            --card-bg: #1e293b;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --border-color: #334155;
-            --light: #0f172a;
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            overscroll-behavior: none;
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: var(--light);
-            color: var(--text-primary);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        
-        [data-theme="dark"] body {
-            background: linear-gradient(to bottom, #0f172a, #1e293b);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--tg-theme-bg-color, var(--light));
+            color: var(--tg-theme-text-color, var(--text-primary));
+            font-size: 14px;
+            position: relative;
         }
         
         .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            padding-bottom: 80px; /* для bottom nav */
+            width: 100%;
+            min-height: 100vh;
+            padding: 10px;
+            padding-bottom: 70px;
+            overflow-x: hidden;
         }
         
-        /* Header Styles */
+        /* Header Compact */
         .header {
             background: var(--card-bg);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.9);
-        }
-        
-        [data-theme="dark"] .header {
-            background: rgba(30, 41, 59, 0.9);
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--gradient-primary);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-size: 24px;
         }
         
         .logo-text {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-primary);
         }
         
         .header-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
         
-        .theme-toggle {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            border: 2px solid var(--border-color);
-            background: var(--card-bg);
+        /* Buttons optimized for touch */
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            transition: all 0.3s;
+            gap: 6px;
+            transition: transform 0.1s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
         
-        .theme-toggle:hover {
-            transform: scale(1.05);
-            border-color: var(--primary);
+        .btn:active {
+            transform: scale(0.95);
         }
         
-        /* Stats Cards */
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+        
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: 10px;
+            font-size: 18px;
+        }
+        
+        /* Stats Grid Mobile */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
         }
         
         .stat-card {
             background: linear-gradient(135deg, var(--card-bg) 0%, rgba(99, 102, 241, 0.05) 100%);
-            padding: 15px;
-            border-radius: 16px;
+            padding: 12px;
+            border-radius: 12px;
             border: 1px solid var(--border-color);
-            transition: all 0.3s;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
         }
         
         .stat-label {
             font-size: 11px;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
         }
         
         .stat-value {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--text-primary);
         }
         
         .stat-change {
-            font-size: 12px;
-            margin-top: 5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 2px 6px;
-            border-radius: 6px;
+            font-size: 11px;
+            margin-top: 2px;
+            display: inline-block;
             font-weight: 600;
         }
         
         .stat-change.positive {
             color: var(--success);
-            background: rgba(16, 185, 129, 0.1);
         }
         
         .stat-change.negative {
             color: var(--danger);
-            background: rgba(239, 68, 68, 0.1);
         }
         
-        /* Tabs */
+        /* Tabs Mobile Optimized */
         .tabs-container {
             background: var(--card-bg);
-            border-radius: 20px;
-            padding: 5px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         
         .tabs {
             display: flex;
-            gap: 5px;
+            gap: 4px;
             overflow-x: auto;
             scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
         }
         
         .tabs::-webkit-scrollbar {
@@ -215,23 +210,27 @@
         }
         
         .tab {
-            padding: 12px 20px;
-            border-radius: 15px;
+            padding: 10px 14px;
+            border-radius: 10px;
             background: transparent;
             border: none;
             color: var(--text-secondary);
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
-            transition: all 0.3s;
             white-space: nowrap;
             display: flex;
             align-items: center;
             gap: 6px;
+            flex: 1;
+            justify-content: center;
+            min-width: 0;
+            transition: all 0.2s;
+            touch-action: manipulation;
         }
         
-        .tab:hover {
-            background: rgba(99, 102, 241, 0.05);
+        .tab:active {
+            transform: scale(0.95);
         }
         
         .tab.active {
@@ -245,7 +244,7 @@
         
         /* Content Area */
         .content-area {
-            min-height: 400px;
+            min-height: 300px;
         }
         
         .tab-content {
@@ -258,70 +257,48 @@
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
-        /* Cards */
-        .card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 20px;
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .card-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-        
-        /* Portfolio Table */
+        /* Portfolio Grid Mobile */
         .portfolio-grid {
             display: grid;
-            gap: 15px;
+            gap: 10px;
         }
         
         .portfolio-item {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 15px;
-            transition: all 0.3s;
+            border-radius: 14px;
+            padding: 12px;
+            transition: all 0.2s;
             cursor: pointer;
+            touch-action: manipulation;
         }
         
-        .portfolio-item:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateX(2px);
+        .portfolio-item:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .portfolio-item-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         
         .token-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
         
         .token-icon {
-            width: 42px;
-            height: 42px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            box-shadow: var(--shadow-sm);
         }
         
         .token-details {
@@ -331,12 +308,12 @@
         
         .token-symbol {
             font-weight: 700;
-            font-size: 16px;
+            font-size: 14px;
             color: var(--text-primary);
         }
         
         .token-name {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
         }
         
@@ -345,21 +322,21 @@
         }
         
         .current-price {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--text-primary);
         }
         
         .price-change {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
         }
         
         .portfolio-item-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            padding-top: 12px;
+            gap: 8px;
+            padding-top: 10px;
             border-top: 1px solid var(--border-color);
         }
         
@@ -369,66 +346,44 @@
         }
         
         .item-stat-label {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-secondary);
             margin-bottom: 2px;
         }
         
         .item-stat-value {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--text-primary);
         }
         
-        /* Alerts Section */
+        /* Alerts */
         .alerts-list {
             display: grid;
-            gap: 12px;
+            gap: 10px;
         }
         
         .alert-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 15px;
+            gap: 10px;
+            padding: 12px;
             background: var(--card-bg);
             border-radius: 12px;
-            border-left: 4px solid;
-            transition: all 0.3s;
-        }
-        
-        .alert-item:hover {
-            transform: translateX(5px);
+            border-left: 3px solid;
+            transition: all 0.2s;
         }
         
         .alert-item.buy {
             border-left-color: var(--success);
-            background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, var(--card-bg) 100%);
         }
         
         .alert-item.sell {
             border-left-color: var(--danger);
-            background: linear-gradient(90deg, rgba(239, 68, 68, 0.1) 0%, var(--card-bg) 100%);
-        }
-        
-        .alert-item.info {
-            border-left-color: var(--info);
-            background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, var(--card-bg) 100%);
         }
         
         .alert-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-size: 20px;
-            background: rgba(255, 255, 255, 0.5);
-        }
-        
-        [data-theme="dark"] .alert-icon {
-            background: rgba(0, 0, 0, 0.2);
         }
         
         .alert-content {
@@ -437,239 +392,16 @@
         
         .alert-title {
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-primary);
-            margin-bottom: 2px;
         }
         
         .alert-description {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        
-        .alert-time {
             font-size: 11px;
             color: var(--text-secondary);
         }
         
-        /* History */
-        .history-list {
-            display: grid;
-            gap: 10px;
-        }
-        
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-        
-        .history-item:hover {
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .history-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .history-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-        
-        .history-icon.buy {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
-        
-        .history-icon.sell {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-        }
-        
-        .history-details {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .history-title {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-primary);
-        }
-        
-        .history-subtitle {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        
-        .history-right {
-            text-align: right;
-        }
-        
-        .history-amount {
-            font-weight: 700;
-            font-size: 14px;
-        }
-        
-        .history-amount.positive {
-            color: var(--success);
-        }
-        
-        .history-amount.negative {
-            color: var(--danger);
-        }
-        
-        .history-date {
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-        
-        /* Analytics */
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        
-        .chart-container {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .chart-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 15px;
-        }
-        
-        .chart-placeholder {
-            height: 200px;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-        
-        .distribution-list {
-            display: grid;
-            gap: 10px;
-        }
-        
-        .distribution-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .distribution-token {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .distribution-bar {
-            width: 100%;
-            height: 4px;
-            background: var(--border-color);
-            border-radius: 2px;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-        
-        .distribution-fill {
-            height: 100%;
-            background: var(--primary);
-            border-radius: 2px;
-            transition: width 0.3s;
-        }
-        
-        /* Buttons */
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn:active {
-            transform: translateY(0);
-        }
-        
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-dark);
-        }
-        
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-        
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-        
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--border-color);
-            color: var(--text-primary);
-        }
-        
-        .btn-outline:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-        
-        .btn-sm {
-            padding: 8px 16px;
-            font-size: 12px;
-        }
-        
-        .btn-icon {
-            width: 36px;
-            height: 36px;
-            padding: 0;
-            border-radius: 10px;
-        }
-        
-        /* Bottom Navigation */
+        /* Bottom Navigation Fixed */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -677,33 +409,30 @@
             right: 0;
             background: var(--card-bg);
             border-top: 1px solid var(--border-color);
-            padding: 10px 20px;
+            padding: 8px 10px;
             display: flex;
             justify-content: space-around;
             align-items: center;
             z-index: 100;
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.95);
-        }
-        
-        [data-theme="dark"] .bottom-nav {
-            background: rgba(30, 41, 59, 0.95);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
         }
         
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            padding: 8px 16px;
-            border-radius: 12px;
+            gap: 2px;
+            padding: 6px 12px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             color: var(--text-secondary);
+            flex: 1;
+            touch-action: manipulation;
         }
         
-        .nav-item:hover {
-            background: rgba(99, 102, 241, 0.1);
+        .nav-item:active {
+            transform: scale(0.95);
         }
         
         .nav-item.active {
@@ -716,37 +445,37 @@
         }
         
         .nav-label {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
         }
         
-        /* Floating Action Button */
-        .fab {
+        /* Add Button in Header */
+        .add-token-btn {
             position: fixed;
-            bottom: 90px;
-            right: 20px;
-            width: 56px;
-            height: 56px;
+            bottom: 80px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background: var(--gradient-primary);
+            background: var(--primary);
             color: white;
             border: none;
             font-size: 24px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
             cursor: pointer;
-            box-shadow: var(--shadow-lg);
-            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             z-index: 99;
+            transition: all 0.3s;
+            touch-action: manipulation;
         }
         
-        .fab:hover {
-            transform: scale(1.1) rotate(90deg);
+        .add-token-btn:active {
+            transform: scale(0.9);
         }
         
-        .fab:active {
-            transform: scale(0.95);
-        }
-        
-        /* Modal */
+        /* Modal Mobile Optimized */
         .modal {
             display: none;
             position: fixed;
@@ -761,43 +490,43 @@
         
         .modal.active {
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             justify-content: center;
         }
         
         .modal-content {
             background: var(--card-bg);
-            border-radius: 24px;
-            padding: 24px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 85vh;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            width: 100%;
+            max-height: 90vh;
             overflow-y: auto;
             animation: slideUp 0.3s;
+            -webkit-overflow-scrolling: touch;
         }
         
         @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
         }
         
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         
         .modal-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--text-primary);
         }
         
         .modal-close {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             border: none;
             background: var(--border-color);
             cursor: pointer;
@@ -806,48 +535,42 @@
             justify-content: center;
             font-size: 20px;
             color: var(--text-secondary);
-            transition: all 0.3s;
-        }
-        
-        .modal-close:hover {
-            background: var(--danger);
-            color: white;
+            touch-action: manipulation;
         }
         
         /* Form Elements */
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         
         .form-label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--text-primary);
             margin-bottom: 6px;
         }
         
-        .form-input, .form-select {
+        .form-input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 2px solid var(--border-color);
             border-radius: 10px;
             font-size: 14px;
             background: var(--card-bg);
             color: var(--text-primary);
-            transition: all 0.3s;
+            -webkit-appearance: none;
         }
         
-        .form-input:focus, .form-select:focus {
+        .form-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
         
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
         }
         
         .input-group {
@@ -861,12 +584,13 @@
         
         /* Search Results */
         #searchResults {
-            max-height: 200px;
+            max-height: 150px;
             overflow-y: auto;
             border: 2px solid var(--border-color);
             border-radius: 10px;
             margin-top: 8px;
             display: none;
+            -webkit-overflow-scrolling: touch;
         }
         
         #searchResults.active {
@@ -876,145 +600,80 @@
         .search-result-item {
             display: flex;
             align-items: center;
-            padding: 12px;
+            padding: 10px;
             cursor: pointer;
-            gap: 12px;
-            transition: all 0.2s;
+            gap: 10px;
+            transition: background 0.2s;
+            touch-action: manipulation;
         }
         
-        .search-result-item:hover {
+        .search-result-item:active {
             background: rgba(99, 102, 241, 0.1);
         }
         
         .search-result-item img {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
         }
         
-        .search-result-info {
-            flex: 1;
-        }
-        
-        .search-result-symbol {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-primary);
-        }
-        
-        .search-result-name {
-            font-size: 12px;
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
             color: var(--text-secondary);
         }
         
-        /* Target Levels Editor */
-        .targets-editor {
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 12px;
-            background: rgba(99, 102, 241, 0.05);
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
         }
         
-        .target-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 40px;
-            gap: 8px;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        
-        .target-input {
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 13px;
-            background: var(--card-bg);
+        .empty-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
             color: var(--text-primary);
         }
         
-        .remove-target-btn {
-            padding: 6px;
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            height: 32px;
-            transition: all 0.2s;
+        .empty-description {
+            font-size: 13px;
+            margin-bottom: 16px;
         }
         
-        .remove-target-btn:hover {
-            background: #dc2626;
-        }
-        
-        .add-target-btn {
-            width: 100%;
-            margin-top: 8px;
-        }
-        
-        /* Notifications */
-        .notification {
+        /* Notification Toast */
+        .toast {
             position: fixed;
             top: 20px;
-            right: 20px;
-            padding: 16px 20px;
-            background: var(--success);
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 16px;
+            background: var(--dark);
             color: white;
-            border-radius: 12px;
-            box-shadow: var(--shadow-lg);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             display: none;
-            animation: slideInRight 0.3s;
             z-index: 2000;
-            max-width: 350px;
+            animation: slideDown 0.3s;
         }
         
-        .notification.show {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .toast.show {
+            display: block;
         }
         
-        .notification.error {
-            background: var(--danger);
+        @keyframes slideDown {
+            from { transform: translate(-50%, -100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
         }
         
-        .notification.warning {
-            background: var(--warning);
-        }
-        
-        .notification.info {
-            background: var(--info);
-        }
-        
-        .notification-icon {
-            font-size: 20px;
-        }
-        
-        .notification-content {
-            flex: 1;
-        }
-        
-        .notification-title {
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-        
-        .notification-message {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        /* Loading States */
+        /* Loading Spinner */
         .loading {
             display: inline-block;
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             border: 2px solid var(--border-color);
             border-radius: 50%;
             border-top-color: var(--primary);
@@ -1025,126 +684,11 @@
             to { transform: rotate(360deg); }
         }
         
-        .skeleton {
-            background: linear-gradient(90deg, var(--border-color) 25%, rgba(99, 102, 241, 0.1) 50%, var(--border-color) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 8px;
-        }
-        
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
-        /* Empty States */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-secondary);
-        }
-        
-        .empty-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-            opacity: 0.3;
-        }
-        
-        .empty-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-        }
-        
-        .empty-description {
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .app-container {
-                padding: 10px;
-            }
-            
-            .header {
-                padding: 15px;
-                border-radius: 16px;
-            }
-            
-            .logo-text {
-                font-size: 18px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .analytics-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .tab {
-                padding: 10px 15px;
-                font-size: 13px;
-            }
-            
-            .portfolio-item-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .header-top {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .header-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
         /* Utilities */
         .text-success { color: var(--success); }
         .text-danger { color: var(--danger); }
-        .text-warning { color: var(--warning); }
-        .text-info { color: var(--info); }
         .text-muted { color: var(--text-secondary); }
-        
-        .bg-success { background: var(--success); }
-        .bg-danger { background: var(--danger); }
-        .bg-warning { background: var(--warning); }
-        .bg-info { background: var(--info); }
-        
-        .mt-1 { margin-top: 5px; }
-        .mt-2 { margin-top: 10px; }
-        .mt-3 { margin-top: 15px; }
-        .mt-4 { margin-top: 20px; }
-        
-        .mb-1 { margin-bottom: 5px; }
-        .mb-2 { margin-bottom: 10px; }
-        .mb-3 { margin-bottom: 15px; }
-        .mb-4 { margin-bottom: 20px; }
-        
         .d-none { display: none; }
-        .d-flex { display: flex; }
-        .d-grid { display: grid; }
-        
-        .gap-1 { gap: 5px; }
-        .gap-2 { gap: 10px; }
-        .gap-3 { gap: 15px; }
-        .gap-4 { gap: 20px; }
     </style>
 </head>
 <body>
@@ -1153,17 +697,14 @@
         <div class="header">
             <div class="header-top">
                 <div class="logo">
-                    <div class="logo-icon">📈</div>
-                    <div class="logo-text">CryptoTracker Pro</div>
+                    <span class="logo-icon">💰</span>
+                    <span class="logo-text">Gold-digger</span>
                 </div>
                 <div class="header-actions">
-                    <button class="theme-toggle" onclick="toggleTheme()" title="Сменить тему">
-                        <span id="themeIcon">🌙</span>
+                    <button class="btn btn-icon btn-outline" onclick="exportData()" title="Export">
+                        📥
                     </button>
-                    <button class="btn btn-sm btn-outline" onclick="exportData()">
-                        📥 Export
-                    </button>
-                    <button class="btn btn-sm btn-primary" onclick="syncAllPrices()">
+                    <button class="btn btn-sm btn-primary" onclick="syncPrices()">
                         🔄 Обновить
                     </button>
                 </div>
@@ -1172,24 +713,24 @@
             <!-- Stats -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-label">Баланс</div>
-                    <div class="stat-value" id="totalBalance">$0.00</div>
-                    <div class="stat-change positive" id="balanceChange">+0%</div>
+                    <div class="stat-label">БАЛАНС</div>
+                    <div class="stat-value" id="totalBalance">$0</div>
+                    <div class="stat-change positive" id="balanceChange">+0.00%</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">P&L</div>
-                    <div class="stat-value" id="totalPnL">$0.00</div>
-                    <div class="stat-change" id="pnlChange">0%</div>
+                    <div class="stat-value" id="totalPnL">$0</div>
+                    <div class="stat-change" id="pnlChange">+0.00%</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">24h изм.</div>
-                    <div class="stat-value" id="dayChange">$0.00</div>
-                    <div class="stat-change" id="dayChangePercent">0%</div>
+                    <div class="stat-label">24H ИЗМ.</div>
+                    <div class="stat-value" id="dayChange">$0</div>
+                    <div class="stat-change" id="dayChangePercent">+0.00%</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Токенов</div>
+                    <div class="stat-label">ТОКЕНОВ</div>
                     <div class="stat-value" id="tokenCount">0</div>
-                    <div class="stat-change" id="alertsCount">0 алертов</div>
+                    <div class="stat-change text-muted" id="alertsCount">0 алертов</div>
                 </div>
             </div>
         </div>
@@ -1197,17 +738,21 @@
         <!-- Tabs -->
         <div class="tabs-container">
             <div class="tabs">
-                <button class="tab active" onclick="switchTab('portfolio')">
-                    <span class="tab-icon">💼</span> Портфель
+                <button class="tab active" data-tab="portfolio">
+                    <span class="tab-icon">💼</span>
+                    <span>Портфель</span>
                 </button>
-                <button class="tab" onclick="switchTab('alerts')">
-                    <span class="tab-icon">🔔</span> Алерты
+                <button class="tab" data-tab="alerts">
+                    <span class="tab-icon">🔔</span>
+                    <span>Алерты</span>
                 </button>
-                <button class="tab" onclick="switchTab('history')">
-                    <span class="tab-icon">📜</span> История
+                <button class="tab" data-tab="history">
+                    <span class="tab-icon">📜</span>
+                    <span>История</span>
                 </button>
-                <button class="tab" onclick="switchTab('analytics')">
-                    <span class="tab-icon">📊</span> Аналитика
+                <button class="tab" data-tab="analytics">
+                    <span class="tab-icon">📊</span>
+                    <span>Аналитика</span>
                 </button>
             </div>
         </div>
@@ -1220,97 +765,40 @@
                     <div class="empty-state">
                         <div class="empty-icon">💼</div>
                         <div class="empty-title">Портфель пуст</div>
-                        <div class="empty-description">Добавьте первый токен, чтобы начать отслеживать</div>
-                        <button class="btn btn-primary" onclick="openAddTokenModal()">
-                            + Добавить токен
-                        </button>
+                        <div class="empty-description">Нажмите кнопку "+" чтобы добавить первый токен</div>
                     </div>
                 </div>
             </div>
             
             <!-- Alerts Tab -->
             <div id="alertsTab" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">🔔 Активные алерты</h3>
-                        <button class="btn btn-sm btn-outline" onclick="clearAllAlerts()">
-                            Очистить все
-                        </button>
-                    </div>
-                    <div class="alerts-list" id="alertsList">
-                        <div class="empty-state">
-                            <div class="empty-icon">🔕</div>
-                            <div class="empty-title">Нет активных алертов</div>
-                            <div class="empty-description">Система автоматически создаст алерты на основе ваших стратегий</div>
-                        </div>
+                <div class="alerts-list" id="alertsList">
+                    <div class="empty-state">
+                        <div class="empty-icon">🔔</div>
+                        <div class="empty-title">Нет алертов</div>
+                        <div class="empty-description">Алерты появятся автоматически</div>
                     </div>
                 </div>
             </div>
             
             <!-- History Tab -->
             <div id="historyTab" class="tab-content">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">📜 История операций</h3>
-                        <select class="form-select" style="width: auto;" onchange="filterHistory(this.value)">
-                            <option value="all">Все операции</option>
-                            <option value="buy">Покупки</option>
-                            <option value="sell">Продажи</option>
-                            <option value="week">За неделю</option>
-                            <option value="month">За месяц</option>
-                        </select>
-                    </div>
-                    <div class="history-list" id="historyList">
-                        <div class="empty-state">
-                            <div class="empty-icon">📜</div>
-                            <div class="empty-title">История пуста</div>
-                            <div class="empty-description">Здесь будут отображаться все ваши операции</div>
-                        </div>
+                <div class="alerts-list" id="historyList">
+                    <div class="empty-state">
+                        <div class="empty-icon">📜</div>
+                        <div class="empty-title">История пуста</div>
+                        <div class="empty-description">Здесь будут ваши операции</div>
                     </div>
                 </div>
             </div>
             
             <!-- Analytics Tab -->
             <div id="analyticsTab" class="tab-content">
-                <div class="analytics-grid">
-                    <div class="chart-container">
-                        <h3 class="chart-title">📊 Распределение портфеля</h3>
-                        <div class="distribution-list" id="distributionChart">
-                            <div class="empty-state">
-                                <div class="empty-icon">📊</div>
-                                <div class="empty-title">Нет данных</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-container">
-                        <h3 class="chart-title">📈 История баланса (7д)</h3>
-                        <div class="chart-placeholder">
-                            График в разработке
-                        </div>
-                    </div>
-                    
-                    <div class="chart-container">
-                        <h3 class="chart-title">🎯 Топ performers</h3>
-                        <div id="topPerformers" class="distribution-list">
-                            <div class="empty-state">
-                                <div class="empty-icon">🏆</div>
-                                <div class="empty-title">Нет данных</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-container">
-                        <h3 class="chart-title">💡 Рекомендации</h3>
-                        <div id="recommendations" style="padding: 10px;">
-                            <div class="alert-item info">
-                                <div class="alert-icon">💡</div>
-                                <div class="alert-content">
-                                    <div class="alert-title">Совет дня</div>
-                                    <div class="alert-description">Диверсифицируйте портфель для снижения рисков</div>
-                                </div>
-                            </div>
-                        </div>
+                <div id="analyticsContent">
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <div class="empty-title">Нет данных</div>
+                        <div class="empty-description">Добавьте токены для аналитики</div>
                     </div>
                 </div>
             </div>
@@ -1318,53 +806,51 @@
         
         <!-- Bottom Navigation -->
         <div class="bottom-nav">
-            <div class="nav-item active" onclick="switchTab('portfolio')">
+            <div class="nav-item active" data-nav="portfolio">
                 <span class="nav-icon">💼</span>
                 <span class="nav-label">Портфель</span>
             </div>
-            <div class="nav-item" onclick="switchTab('alerts')">
+            <div class="nav-item" data-nav="alerts">
                 <span class="nav-icon">🔔</span>
                 <span class="nav-label">Алерты</span>
             </div>
-            <div class="nav-item" onclick="switchTab('history')">
+            <div class="nav-item" data-nav="history">
                 <span class="nav-icon">📜</span>
                 <span class="nav-label">История</span>
             </div>
-            <div class="nav-item" onclick="switchTab('analytics')">
+            <div class="nav-item" data-nav="analytics">
                 <span class="nav-icon">📊</span>
                 <span class="nav-label">Аналитика</span>
             </div>
         </div>
         
-        <!-- Floating Action Button -->
-        <button class="fab" onclick="openAddTokenModal()">+</button>
+        <!-- Floating Add Button -->
+        <button class="add-token-btn" id="addTokenBtn">+</button>
     </div>
     
-    <!-- Add/Edit Token Modal -->
+    <!-- Add Token Modal -->
     <div class="modal" id="tokenModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title" id="modalTitle">Добавить токен</h3>
-                <button class="modal-close" onclick="closeModal('tokenModal')">×</button>
+                <button class="modal-close" id="closeModalBtn">×</button>
             </div>
             
-            <form id="tokenForm" onsubmit="saveToken(event)">
+            <form id="tokenForm">
                 <input type="hidden" id="editTokenId">
                 
-                <!-- Search Section -->
-                <div id="searchSection">
-                    <div class="form-group">
-                        <label class="form-label">🔍 Поиск токена</label>
-                        <div class="input-group">
-                            <input type="text" class="form-input" id="tokenSearch" 
-                                   placeholder="Bitcoin, Ethereum, SOL..." 
-                                   autocomplete="off" oninput="searchDebounce()">
-                            <button type="button" class="btn btn-primary" onclick="searchTokens()">
-                                Найти
-                            </button>
-                        </div>
-                        <div id="searchResults"></div>
+                <!-- Search -->
+                <div class="form-group">
+                    <label class="form-label">🔍 Поиск токена</label>
+                    <div class="input-group">
+                        <input type="text" class="form-input" id="tokenSearch" 
+                               placeholder="Bitcoin, ETH, SOL..." 
+                               autocomplete="off">
+                        <button type="button" class="btn btn-primary" id="searchBtn">
+                            Найти
+                        </button>
                     </div>
+                    <div id="searchResults"></div>
                 </div>
                 
                 <input type="hidden" id="coingeckoId">
@@ -1389,68 +875,25 @@
                                placeholder="0.00" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Цена покупки ($)</label>
+                        <label class="form-label">Цена ($)</label>
                         <input type="number" step="any" class="form-input" id="tokenBuyPrice" 
                                placeholder="0.00" required>
                     </div>
                 </div>
                 
-                <!-- Risk Management -->
+                <!-- Stop Loss -->
                 <div class="form-group">
                     <label class="form-label">⛔ Stop-Loss ($)</label>
                     <input type="number" step="any" class="form-input" id="tokenStopLoss" 
-                           placeholder="Цена для выхода с убытком">
+                           placeholder="Опционально">
                 </div>
                 
-                <!-- Take Profit Targets -->
-                <div class="form-group">
-                    <label class="form-label">🎯 Take Profit уровни</label>
-                    <div class="targets-editor" id="targetsEditor">
-                        <div class="target-row">
-                            <input type="number" step="any" class="target-input" 
-                                   placeholder="Цена TP1 ($)">
-                            <input type="number" step="any" class="target-input" 
-                                   placeholder="% продажи">
-                            <button type="button" class="remove-target-btn" 
-                                    onclick="this.parentElement.remove()">×</button>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-sm btn-outline add-target-btn" 
-                            onclick="addTargetRow()">
-                        + Добавить уровень
-                    </button>
-                </div>
-                
-                <!-- Alert Preferences -->
-                <div class="form-group">
-                    <label class="form-label">🔔 Уведомления</label>
-                    <div style="display: grid; gap: 10px;">
-                        <label style="display: flex; align-items: center; gap: 10px;">
-                            <input type="checkbox" id="alertOnStopLoss" checked>
-                            <span>При достижении Stop-Loss</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px;">
-                            <input type="checkbox" id="alertOnTarget" checked>
-                            <span>При достижении целей</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px;">
-                            <input type="checkbox" id="alertOnRSI" checked>
-                            <span>RSI сигналы (перекупленность/перепроданность)</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 10px;">
-                            <input type="checkbox" id="alertOn24hChange" checked>
-                            <span>Изменение >10% за 24ч</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <!-- Form Actions -->
-                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <!-- Actions -->
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
                     <button type="submit" class="btn btn-primary" style="flex: 1;">
                         💾 Сохранить
                     </button>
-                    <button type="button" class="btn btn-outline" onclick="closeModal('tokenModal')" 
-                            style="flex: 1;">
+                    <button type="button" class="btn btn-outline" id="cancelBtn" style="flex: 1;">
                         Отмена
                     </button>
                 </div>
@@ -1458,133 +901,122 @@
         </div>
     </div>
     
-    <!-- Notification Container -->
-    <div class="notification" id="notification">
-        <span class="notification-icon" id="notificationIcon">✓</span>
-        <div class="notification-content">
-            <div class="notification-title" id="notificationTitle">Успешно</div>
-            <div class="notification-message" id="notificationMessage">Операция выполнена</div>
-        </div>
-    </div>
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
     
     <script>
-        // ==================== State Management ====================
+        // ==================== Telegram WebApp Init ====================
+        let tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        
+        // ==================== State ====================
         let portfolio = [];
         let alerts = [];
         let history = [];
         let nextTokenId = 1;
-        let currentTheme = 'light';
-        let autoUpdateInterval = null;
-        let searchTimeout = null;
         
-        // ==================== Initialization ====================
-        document.addEventListener('DOMContentLoaded', () => {
+        // ==================== Init ====================
+        document.addEventListener('DOMContentLoaded', function() {
             loadData();
-            applyTheme();
             updateDisplay();
-            startAutoUpdate();
-            checkAlerts();
+            setupEventListeners();
+            // Auto sync every 30 seconds
+            setInterval(syncPrices, 30000);
         });
         
-        // ==================== Theme Management ====================
-        function toggleTheme() {
-            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            applyTheme();
-            localStorage.setItem('cryptoTheme', currentTheme);
+        // ==================== Event Listeners ====================
+        function setupEventListeners() {
+            // Add Token Button
+            document.getElementById('addTokenBtn').addEventListener('click', openAddModal);
+            
+            // Modal Controls
+            document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+            document.getElementById('cancelBtn').addEventListener('click', closeModal);
+            
+            // Search
+            document.getElementById('searchBtn').addEventListener('click', searchTokens);
+            document.getElementById('tokenSearch').addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') searchTokens();
+            });
+            
+            // Form Submit
+            document.getElementById('tokenForm').addEventListener('submit', saveToken);
+            
+            // Tab Navigation
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    switchTab(this.dataset.tab);
+                });
+            });
+            
+            // Bottom Navigation
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.addEventListener('click', function() {
+                    switchTab(this.dataset.nav);
+                });
+            });
+            
+            // Modal backdrop click
+            document.getElementById('tokenModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
         }
         
-        function applyTheme() {
-            document.body.setAttribute('data-theme', currentTheme);
-            document.getElementById('themeIcon').textContent = currentTheme === 'light' ? '🌙' : '☀️';
-        }
-        
-        // ==================== Tab Navigation ====================
+        // ==================== Navigation ====================
         function switchTab(tabName) {
             // Update tabs
             document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
+                tab.classList.toggle('active', tab.dataset.tab === tabName);
             });
-            event.target.closest('.tab').classList.add('active');
+            
+            // Update bottom nav
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.toggle('active', nav.dataset.nav === tabName);
+            });
             
             // Update content
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
             document.getElementById(`${tabName}Tab`).classList.add('active');
-            
-            // Update bottom nav
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelector(`.nav-item[onclick*="${tabName}"]`).classList.add('active');
-            
-            // Load specific tab data
-            if (tabName === 'analytics') {
-                updateAnalytics();
-            }
         }
         
-        // ==================== Modal Management ====================
-        function openAddTokenModal() {
+        // ==================== Modal ====================
+        function openAddModal() {
             document.getElementById('tokenForm').reset();
             document.getElementById('editTokenId').value = '';
             document.getElementById('modalTitle').textContent = 'Добавить токен';
-            document.getElementById('searchSection').style.display = 'block';
-            document.getElementById('targetsEditor').innerHTML = `
-                <div class="target-row">
-                    <input type="number" step="any" class="target-input" placeholder="Цена TP1 ($)">
-                    <input type="number" step="any" class="target-input" placeholder="% продажи">
-                    <button type="button" class="remove-target-btn" onclick="this.parentElement.remove()">×</button>
-                </div>
-            `;
             document.getElementById('searchResults').innerHTML = '';
+            document.getElementById('searchResults').classList.remove('active');
             document.getElementById('tokenModal').classList.add('active');
+            
+            // Vibrate if available
+            if (navigator.vibrate) navigator.vibrate(10);
         }
         
-        function openEditTokenModal(tokenId) {
+        function openEditModal(tokenId) {
             const token = portfolio.find(t => t.id === tokenId);
             if (!token) return;
             
-            document.getElementById('modalTitle').textContent = 'Редактировать токен';
-            document.getElementById('searchSection').style.display = 'none';
+            document.getElementById('modalTitle').textContent = 'Изменить токен';
             document.getElementById('editTokenId').value = token.id;
             document.getElementById('coingeckoId').value = token.coingeckoId;
             document.getElementById('tokenSymbol').value = token.symbol;
+            document.getElementById('tokenSymbol').dataset.iconUrl = token.iconUrl;
             document.getElementById('tokenName').value = token.name;
             document.getElementById('tokenAmount').value = token.amount;
             document.getElementById('tokenBuyPrice').value = token.avgPrice;
             document.getElementById('tokenStopLoss').value = token.stopLoss || '';
             
-            // Load targets
-            const targetsEditor = document.getElementById('targetsEditor');
-            targetsEditor.innerHTML = '';
-            if (token.targets && token.targets.length > 0) {
-                token.targets.forEach(target => {
-                    addTargetRow(target.price, target.percentage);
-                });
-            } else {
-                addTargetRow();
-            }
-            
-            // Load alert preferences
-            document.getElementById('alertOnStopLoss').checked = token.alerts?.stopLoss ?? true;
-            document.getElementById('alertOnTarget').checked = token.alerts?.target ?? true;
-            document.getElementById('alertOnRSI').checked = token.alerts?.rsi ?? true;
-            document.getElementById('alertOn24hChange').checked = token.alerts?.change24h ?? true;
-            
             document.getElementById('tokenModal').classList.add('active');
         }
         
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
+        function closeModal() {
+            document.getElementById('tokenModal').classList.remove('active');
         }
         
-        // ==================== Token Search ====================
-        function searchDebounce() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(searchTokens, 500);
-        }
-        
+        // ==================== Search ====================
         async function searchTokens() {
             const query = document.getElementById('tokenSearch').value;
             const resultsDiv = document.getElementById('searchResults');
@@ -1594,7 +1026,7 @@
                 return;
             }
             
-            resultsDiv.innerHTML = '<div style="padding: 20px; text-align: center;">🔍 Поиск...</div>';
+            resultsDiv.innerHTML = '<div style="padding: 15px; text-align: center;">🔍 Поиск...</div>';
             resultsDiv.classList.add('active');
             
             try {
@@ -1602,24 +1034,31 @@
                 const data = await response.json();
                 
                 if (data.coins.length === 0) {
-                    resultsDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">Ничего не найдено</div>';
+                    resultsDiv.innerHTML = '<div style="padding: 15px; text-align: center;">Ничего не найдено</div>';
                     return;
                 }
                 
                 resultsDiv.innerHTML = data.coins.slice(0, 10).map(coin => `
-                    <div class="search-result-item" onclick="selectToken('${coin.id}', '${coin.symbol.toUpperCase()}', '${coin.name}', '${coin.thumb}')">
+                    <div class="search-result-item" data-id="${coin.id}" 
+                         data-symbol="${coin.symbol.toUpperCase()}" 
+                         data-name="${coin.name}" 
+                         data-icon="${coin.thumb}">
                         <img src="${coin.thumb}" alt="${coin.name}">
-                        <div class="search-result-info">
-                            <div class="search-result-symbol">${coin.symbol.toUpperCase()}</div>
-                            <div class="search-result-name">${coin.name}</div>
-                        </div>
-                        <div style="color: var(--text-secondary); font-size: 12px;">
-                            #${coin.market_cap_rank || 'N/A'}
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">${coin.symbol.toUpperCase()}</div>
+                            <div style="font-size: 11px; color: var(--text-secondary);">${coin.name}</div>
                         </div>
                     </div>
                 `).join('');
+                
+                // Add click handlers
+                resultsDiv.querySelectorAll('.search-result-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        selectToken(this.dataset.id, this.dataset.symbol, this.dataset.name, this.dataset.icon);
+                    });
+                });
             } catch (error) {
-                resultsDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--danger);">Ошибка поиска</div>';
+                resultsDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: var(--danger);">Ошибка поиска</div>';
                 console.error('Search error:', error);
             }
         }
@@ -1633,28 +1072,15 @@
             document.getElementById('tokenSearch').value = `${name} (${symbol})`;
         }
         
-        // ==================== Target Management ====================
-        function addTargetRow(price = '', percentage = '') {
-            const editor = document.getElementById('targetsEditor');
-            const row = document.createElement('div');
-            row.className = 'target-row';
-            row.innerHTML = `
-                <input type="number" step="any" class="target-input" placeholder="Цена TP ($)" value="${price}">
-                <input type="number" step="any" class="target-input" placeholder="% продажи" value="${percentage}">
-                <button type="button" class="remove-target-btn" onclick="this.parentElement.remove()">×</button>
-            `;
-            editor.appendChild(row);
-        }
-        
         // ==================== Save Token ====================
-        function saveToken(event) {
-            event.preventDefault();
+        function saveToken(e) {
+            e.preventDefault();
             
             const editId = document.getElementById('editTokenId').value;
             const coingeckoId = document.getElementById('coingeckoId').value;
             
             if (!editId && !coingeckoId) {
-                showNotification('Выберите токен из поиска', 'warning');
+                showToast('Выберите токен из поиска');
                 return;
             }
             
@@ -1666,34 +1092,18 @@
                 amount: parseFloat(document.getElementById('tokenAmount').value),
                 avgPrice: parseFloat(document.getElementById('tokenBuyPrice').value),
                 stopLoss: parseFloat(document.getElementById('tokenStopLoss').value) || 0,
-                targets: [],
-                alerts: {
-                    stopLoss: document.getElementById('alertOnStopLoss').checked,
-                    target: document.getElementById('alertOnTarget').checked,
-                    rsi: document.getElementById('alertOnRSI').checked,
-                    change24h: document.getElementById('alertOn24hChange').checked
-                }
             };
             
-            // Collect targets
-            document.querySelectorAll('#targetsEditor .target-row').forEach(row => {
-                const price = parseFloat(row.children[0].value);
-                const percentage = parseFloat(row.children[1].value);
-                if (price > 0 && percentage > 0) {
-                    tokenData.targets.push({ price, percentage });
-                }
-            });
-            
             if (editId) {
-                // Update existing token
+                // Update existing
                 const index = portfolio.findIndex(t => t.id === parseInt(editId));
                 if (index !== -1) {
                     portfolio[index] = { ...portfolio[index], ...tokenData };
                     addToHistory('edit', tokenData.symbol, tokenData.amount, tokenData.avgPrice);
-                    showNotification(`${tokenData.symbol} обновлен`, 'success');
+                    showToast(`${tokenData.symbol} обновлен`);
                 }
             } else {
-                // Add new token
+                // Add new
                 tokenData.id = nextTokenId++;
                 tokenData.currentPrice = tokenData.avgPrice;
                 tokenData.totalInvested = tokenData.amount * tokenData.avgPrice;
@@ -1701,27 +1111,29 @@
                 
                 portfolio.push(tokenData);
                 addToHistory('buy', tokenData.symbol, tokenData.amount, tokenData.avgPrice);
-                showNotification(`${tokenData.symbol} добавлен в портфель`, 'success');
+                showToast(`${tokenData.symbol} добавлен`);
                 
-                // Fetch current price immediately
+                // Fetch current price
                 fetchTokenPrice(tokenData.coingeckoId);
             }
             
-            closeModal('tokenModal');
+            closeModal();
             updateDisplay();
             saveData();
         }
         
         // ==================== Price Updates ====================
-        async function syncAllPrices() {
+        async function syncPrices() {
             if (portfolio.length === 0) return;
             
-            const button = event.target;
-            button.disabled = true;
-            button.innerHTML = '<span class="loading"></span> Обновление...';
+            const button = document.querySelector('.btn-primary');
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = '<span class="loading"></span>';
+            }
             
             const ids = portfolio.map(token => token.coingeckoId).join(',');
-            const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true`;
+            const url = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`;
             
             try {
                 const response = await fetch(url);
@@ -1732,20 +1144,21 @@
                         const data = prices[token.coingeckoId];
                         token.currentPrice = data.usd;
                         token.change24h = data.usd_24h_change;
-                        token.volume24h = data.usd_24h_vol;
                     }
                 });
                 
                 checkAlerts();
                 updateDisplay();
                 saveData();
-                showNotification('Цены обновлены', 'success');
+                showToast('Цены обновлены');
             } catch (error) {
-                showNotification('Ошибка обновления цен', 'error');
-                console.error('Price sync error:', error);
+                showToast('Ошибка обновления');
+                console.error('Sync error:', error);
             } finally {
-                button.disabled = false;
-                button.innerHTML = '🔄 Обновить';
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = '🔄 Обновить';
+                }
             }
         }
         
@@ -1768,56 +1181,20 @@
             }
         }
         
-        function startAutoUpdate() {
-            // Update prices every 30 seconds
-            autoUpdateInterval = setInterval(() => {
-                syncAllPrices();
-            }, 30000);
-        }
-        
-        // ==================== Alerts System ====================
+        // ==================== Alerts ====================
         function checkAlerts() {
             portfolio.forEach(token => {
-                const currentValue = token.amount * token.currentPrice;
-                const pnl = currentValue - token.totalInvested;
-                const pnlPercent = (pnl / token.totalInvested) * 100;
-                
                 // Stop-Loss Alert
-                if (token.alerts?.stopLoss && token.stopLoss > 0 && token.currentPrice <= token.stopLoss) {
+                if (token.stopLoss > 0 && token.currentPrice <= token.stopLoss) {
                     createAlert('sell', `${token.symbol} достиг Stop-Loss`, 
-                               `Текущая цена: $${token.currentPrice.toFixed(2)}, SL: $${token.stopLoss.toFixed(2)}`);
-                }
-                
-                // Target Alerts
-                if (token.alerts?.target && token.targets) {
-                    token.targets.forEach((target, index) => {
-                        if (token.currentPrice >= target.price && !target.triggered) {
-                            createAlert('sell', `${token.symbol} достиг Target ${index + 1}`, 
-                                       `Цена: $${token.currentPrice.toFixed(2)}, Цель: $${target.price.toFixed(2)}`);
-                            target.triggered = true;
-                        }
-                    });
+                               `Цена: $${token.currentPrice.toFixed(2)}`);
                 }
                 
                 // 24h Change Alert
-                if (token.alerts?.change24h && Math.abs(token.change24h || 0) > 10) {
+                if (Math.abs(token.change24h || 0) > 10) {
                     const type = token.change24h > 0 ? 'buy' : 'sell';
-                    const direction = token.change24h > 0 ? 'вырос' : 'упал';
-                    createAlert(type, `${token.symbol} ${direction} на ${Math.abs(token.change24h).toFixed(1)}%`, 
-                               'Значительное изменение за 24ч');
-                }
-                
-                // RSI Alerts (simulated)
-                if (token.alerts?.rsi) {
-                    // Simulate RSI based on 24h change
-                    const simulatedRSI = 50 + (token.change24h || 0) * 2;
-                    if (simulatedRSI > 70) {
-                        createAlert('sell', `${token.symbol} перекуплен`, 
-                                   `RSI: ${simulatedRSI.toFixed(0)} - возможна коррекция`);
-                    } else if (simulatedRSI < 30) {
-                        createAlert('buy', `${token.symbol} перепродан`, 
-                                   `RSI: ${simulatedRSI.toFixed(0)} - хорошая точка входа`);
-                    }
+                    createAlert(type, `${token.symbol} ${token.change24h > 0 ? '↑' : '↓'}${Math.abs(token.change24h).toFixed(1)}%`, 
+                               'Сильное движение за 24ч');
                 }
             });
             
@@ -1825,11 +1202,8 @@
         }
         
         function createAlert(type, title, description) {
-            // Check if similar alert already exists
-            const exists = alerts.some(alert => 
-                alert.title === title && 
-                new Date() - new Date(alert.timestamp) < 3600000 // 1 hour
-            );
+            const exists = alerts.some(a => a.title === title && 
+                new Date() - new Date(a.timestamp) < 3600000);
             
             if (!exists) {
                 alerts.unshift({
@@ -1840,63 +1214,46 @@
                     timestamp: new Date().toISOString()
                 });
                 
-                // Keep only last 50 alerts
-                if (alerts.length > 50) {
-                    alerts = alerts.slice(0, 50);
-                }
+                if (alerts.length > 20) alerts = alerts.slice(0, 20);
                 
                 saveData();
                 updateAlertsList();
                 
-                // Show notification
-                showNotification(title, type === 'buy' ? 'success' : type === 'sell' ? 'warning' : 'info');
+                // Telegram notification
+                if (tg.showAlert) {
+                    tg.showAlert(`${title}\n${description}`);
+                }
             }
         }
         
         function updateAlertsList() {
-            const alertsList = document.getElementById('alertsList');
+            const list = document.getElementById('alertsList');
             
             if (alerts.length === 0) {
-                alertsList.innerHTML = `
+                list.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">🔕</div>
-                        <div class="empty-title">Нет активных алертов</div>
-                        <div class="empty-description">Система автоматически создаст алерты на основе ваших стратегий</div>
+                        <div class="empty-icon">🔔</div>
+                        <div class="empty-title">Нет алертов</div>
+                        <div class="empty-description">Алерты появятся автоматически</div>
                     </div>
                 `;
                 return;
             }
             
-            alertsList.innerHTML = alerts.map(alert => {
-                const icon = alert.type === 'buy' ? '📈' : alert.type === 'sell' ? '📉' : 'ℹ️';
-                const timeAgo = getTimeAgo(new Date(alert.timestamp));
-                
-                return `
-                    <div class="alert-item ${alert.type}">
-                        <div class="alert-icon">${icon}</div>
-                        <div class="alert-content">
-                            <div class="alert-title">${alert.title}</div>
-                            <div class="alert-description">${alert.description}</div>
-                        </div>
-                        <div class="alert-time">${timeAgo}</div>
+            list.innerHTML = alerts.map(alert => `
+                <div class="alert-item ${alert.type}">
+                    <div class="alert-icon">${alert.type === 'buy' ? '📈' : '📉'}</div>
+                    <div class="alert-content">
+                        <div class="alert-title">${alert.title}</div>
+                        <div class="alert-description">${alert.description}</div>
                     </div>
-                `;
-            }).join('');
+                </div>
+            `).join('');
             
-            // Update alerts count in stats
             document.getElementById('alertsCount').textContent = `${alerts.length} алертов`;
         }
         
-        function clearAllAlerts() {
-            if (confirm('Очистить все алерты?')) {
-                alerts = [];
-                saveData();
-                updateAlertsList();
-                showNotification('Алерты очищены', 'success');
-            }
-        }
-        
-        // ==================== History Management ====================
+        // ==================== History ====================
         function addToHistory(type, symbol, amount, price) {
             history.unshift({
                 id: Date.now(),
@@ -1908,72 +1265,38 @@
                 timestamp: new Date().toISOString()
             });
             
-            // Keep only last 100 transactions
-            if (history.length > 100) {
-                history = history.slice(0, 100);
-            }
+            if (history.length > 50) history = history.slice(0, 50);
             
             saveData();
             updateHistoryList();
         }
         
-        function updateHistoryList(filter = 'all') {
-            const historyList = document.getElementById('historyList');
+        function updateHistoryList() {
+            const list = document.getElementById('historyList');
             
-            let filteredHistory = history;
-            
-            if (filter === 'buy') {
-                filteredHistory = history.filter(h => h.type === 'buy');
-            } else if (filter === 'sell') {
-                filteredHistory = history.filter(h => h.type === 'sell');
-            } else if (filter === 'week') {
-                const weekAgo = new Date();
-                weekAgo.setDate(weekAgo.getDate() - 7);
-                filteredHistory = history.filter(h => new Date(h.timestamp) > weekAgo);
-            } else if (filter === 'month') {
-                const monthAgo = new Date();
-                monthAgo.setMonth(monthAgo.getMonth() - 1);
-                filteredHistory = history.filter(h => new Date(h.timestamp) > monthAgo);
-            }
-            
-            if (filteredHistory.length === 0) {
-                historyList.innerHTML = `
+            if (history.length === 0) {
+                list.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">📜</div>
                         <div class="empty-title">История пуста</div>
-                        <div class="empty-description">Здесь будут отображаться все ваши операции</div>
+                        <div class="empty-description">Здесь будут ваши операции</div>
                     </div>
                 `;
                 return;
             }
             
-            historyList.innerHTML = filteredHistory.map(item => {
-                const icon = item.type === 'buy' ? '📥' : item.type === 'sell' ? '📤' : '✏️';
+            list.innerHTML = history.map(item => {
                 const date = new Date(item.timestamp).toLocaleDateString('ru-RU');
-                const time = new Date(item.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-                
                 return `
-                    <div class="history-item">
-                        <div class="history-left">
-                            <div class="history-icon ${item.type}">${icon}</div>
-                            <div class="history-details">
-                                <div class="history-title">${item.type === 'buy' ? 'Покупка' : item.type === 'sell' ? 'Продажа' : 'Изменение'} ${item.symbol}</div>
-                                <div class="history-subtitle">${item.amount} @ $${item.price.toFixed(2)}</div>
-                            </div>
-                        </div>
-                        <div class="history-right">
-                            <div class="history-amount ${item.type === 'sell' ? 'positive' : 'negative'}">
-                                ${item.type === 'sell' ? '+' : '-'}$${item.value.toFixed(2)}
-                            </div>
-                            <div class="history-date">${date} ${time}</div>
+                    <div class="alert-item">
+                        <div class="alert-icon">${item.type === 'buy' ? '📥' : '📤'}</div>
+                        <div class="alert-content">
+                            <div class="alert-title">${item.type === 'buy' ? 'Покупка' : 'Продажа'} ${item.symbol}</div>
+                            <div class="alert-description">${item.amount} @ $${item.price.toFixed(2)} • ${date}</div>
                         </div>
                     </div>
                 `;
             }).join('');
-        }
-        
-        function filterHistory(filter) {
-            updateHistoryList(filter);
         }
         
         // ==================== Portfolio Display ====================
@@ -1982,6 +1305,7 @@
             updateStats();
             updateHistoryList();
             updateAlertsList();
+            updateAnalytics();
         }
         
         function updatePortfolioGrid() {
@@ -1992,10 +1316,7 @@
                     <div class="empty-state">
                         <div class="empty-icon">💼</div>
                         <div class="empty-title">Портфель пуст</div>
-                        <div class="empty-description">Добавьте первый токен, чтобы начать отслеживать</div>
-                        <button class="btn btn-primary" onclick="openAddTokenModal()">
-                            + Добавить токен
-                        </button>
+                        <div class="empty-description">Нажмите кнопку "+" чтобы добавить первый токен</div>
                     </div>
                 `;
                 return;
@@ -2007,26 +1328,18 @@
                 const pnlPercent = (pnl / token.totalInvested) * 100;
                 const change24h = token.change24h || 0;
                 
-                // Check if any alert condition is met
-                let alertIndicator = '';
-                if (token.stopLoss > 0 && token.currentPrice <= token.stopLoss) {
-                    alertIndicator = '<span style="color: var(--danger);">⚠️ SL</span>';
-                } else if (token.targets?.some(t => token.currentPrice >= t.price)) {
-                    alertIndicator = '<span style="color: var(--success);">🎯 TP</span>';
-                }
-                
                 return `
-                    <div class="portfolio-item" onclick="openEditTokenModal(${token.id})">
+                    <div class="portfolio-item" onclick="openEditModal(${token.id})">
                         <div class="portfolio-item-header">
                             <div class="token-info">
                                 <img src="${token.iconUrl}" class="token-icon" alt="${token.name}">
                                 <div class="token-details">
-                                    <div class="token-symbol">${token.symbol} ${alertIndicator}</div>
+                                    <div class="token-symbol">${token.symbol}</div>
                                     <div class="token-name">${token.name}</div>
                                 </div>
                             </div>
                             <div class="token-price">
-                                <div class="current-price">$${token.currentPrice.toLocaleString('en-US', {maximumFractionDigits: 2})}</div>
+                                <div class="current-price">$${token.currentPrice.toFixed(2)}</div>
                                 <div class="price-change ${change24h >= 0 ? 'text-success' : 'text-danger'}">
                                     ${change24h >= 0 ? '↑' : '↓'} ${Math.abs(change24h).toFixed(2)}%
                                 </div>
@@ -2034,18 +1347,17 @@
                         </div>
                         <div class="portfolio-item-stats">
                             <div class="item-stat">
-                                <div class="item-stat-label">Количество</div>
-                                <div class="item-stat-value">${token.amount.toLocaleString('en-US', {maximumFractionDigits: 6})}</div>
+                                <div class="item-stat-label">Кол-во</div>
+                                <div class="item-stat-value">${token.amount.toFixed(4)}</div>
                             </div>
                             <div class="item-stat">
                                 <div class="item-stat-label">Стоимость</div>
-                                <div class="item-stat-value">$${currentValue.toLocaleString('en-US', {maximumFractionDigits: 2})}</div>
+                                <div class="item-stat-value">$${currentValue.toFixed(2)}</div>
                             </div>
                             <div class="item-stat">
                                 <div class="item-stat-label">P&L</div>
                                 <div class="item-stat-value ${pnl >= 0 ? 'text-success' : 'text-danger'}">
-                                    ${pnl >= 0 ? '+' : ''}$${pnl.toLocaleString('en-US', {maximumFractionDigits: 2})}
-                                    (${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%)
+                                    ${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}
                                 </div>
                             </div>
                         </div>
@@ -2055,25 +1367,22 @@
         }
         
         function updateStats() {
-            const totalInvested = portfolio.reduce((sum, token) => sum + token.totalInvested, 0);
-            const totalValue = portfolio.reduce((sum, token) => sum + (token.amount * token.currentPrice), 0);
+            const totalInvested = portfolio.reduce((sum, t) => sum + t.totalInvested, 0);
+            const totalValue = portfolio.reduce((sum, t) => sum + (t.amount * t.currentPrice), 0);
             const totalPnL = totalValue - totalInvested;
             const pnlPercent = totalInvested > 0 ? (totalPnL / totalInvested * 100) : 0;
             
-            // Calculate 24h change
-            const dayChange = portfolio.reduce((sum, token) => {
-                const change = token.amount * token.currentPrice * (token.change24h || 0) / 100;
+            const dayChange = portfolio.reduce((sum, t) => {
+                const change = t.amount * t.currentPrice * (t.change24h || 0) / 100;
                 return sum + change;
             }, 0);
             const dayChangePercent = totalValue > 0 ? (dayChange / (totalValue - dayChange) * 100) : 0;
             
-            // Update displays
-            document.getElementById('totalBalance').textContent = `$${totalValue.toLocaleString('en-US', {maximumFractionDigits: 2})}`;
-            document.getElementById('totalPnL').textContent = `$${totalPnL.toLocaleString('en-US', {maximumFractionDigits: 2})}`;
-            document.getElementById('dayChange').textContent = `$${dayChange.toLocaleString('en-US', {maximumFractionDigits: 2})}`;
+            document.getElementById('totalBalance').textContent = `$${totalValue.toFixed(0)}`;
+            document.getElementById('totalPnL').textContent = `$${totalPnL.toFixed(0)}`;
+            document.getElementById('dayChange').textContent = `$${dayChange.toFixed(0)}`;
             document.getElementById('tokenCount').textContent = portfolio.length;
             
-            // Update change indicators
             const balanceChange = document.getElementById('balanceChange');
             balanceChange.textContent = `${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%`;
             balanceChange.className = `stat-change ${pnlPercent >= 0 ? 'positive' : 'negative'}`;
@@ -2082,246 +1391,119 @@
             pnlChange.textContent = `${pnlPercent >= 0 ? '+' : ''}${pnlPercent.toFixed(2)}%`;
             pnlChange.className = `stat-change ${pnlPercent >= 0 ? 'positive' : 'negative'}`;
             
-            const dayChangePct = document.getElementById('dayChangePercent');
-            dayChangePct.textContent = `${dayChangePercent >= 0 ? '+' : ''}${dayChangePercent.toFixed(2)}%`;
-            dayChangePct.className = `stat-change ${dayChangePercent >= 0 ? 'positive' : 'negative'}`;
+            const dayPct = document.getElementById('dayChangePercent');
+            dayPct.textContent = `${dayChangePercent >= 0 ? '+' : ''}${dayChangePercent.toFixed(2)}%`;
+            dayPct.className = `stat-change ${dayChangePercent >= 0 ? 'positive' : 'negative'}`;
         }
         
-        // ==================== Analytics ====================
         function updateAnalytics() {
-            updateDistributionChart();
-            updateTopPerformers();
-            updateRecommendations();
-        }
-        
-        function updateDistributionChart() {
-            const chart = document.getElementById('distributionChart');
+            const content = document.getElementById('analyticsContent');
             
             if (portfolio.length === 0) {
-                chart.innerHTML = `
+                content.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">📊</div>
                         <div class="empty-title">Нет данных</div>
+                        <div class="empty-description">Добавьте токены для аналитики</div>
                     </div>
                 `;
                 return;
             }
             
-            const totalValue = portfolio.reduce((sum, token) => sum + (token.amount * token.currentPrice), 0);
+            const totalValue = portfolio.reduce((sum, t) => sum + (t.amount * t.currentPrice), 0);
             
-            chart.innerHTML = portfolio
-                .sort((a, b) => (b.amount * b.currentPrice) - (a.amount * a.currentPrice))
-                .map(token => {
-                    const value = token.amount * token.currentPrice;
-                    const percentage = (value / totalValue * 100).toFixed(1);
-                    
-                    return `
-                        <div class="distribution-item">
-                            <div class="distribution-token">
-                                <img src="${token.iconUrl}" style="width: 24px; height: 24px; border-radius: 50%;">
-                                <span>${token.symbol}</span>
-                                <span style="color: var(--text-secondary);">${percentage}%</span>
-                            </div>
-                            <div style="text-align: right; color: var(--text-secondary);">
-                                $${value.toLocaleString('en-US', {maximumFractionDigits: 2})}
-                            </div>
-                        </div>
-                        <div class="distribution-bar">
-                            <div class="distribution-fill" style="width: ${percentage}%;"></div>
-                        </div>
-                    `;
-                }).join('');
-        }
-        
-        function updateTopPerformers() {
-            const container = document.getElementById('topPerformers');
-            
-            if (portfolio.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">🏆</div>
-                        <div class="empty-title">Нет данных</div>
-                    </div>
-                `;
-                return;
-            }
-            
-            const performers = portfolio.map(token => {
-                const pnl = (token.amount * token.currentPrice) - token.totalInvested;
-                const pnlPercent = (pnl / token.totalInvested * 100);
-                return { ...token, pnl, pnlPercent };
-            }).sort((a, b) => b.pnlPercent - a.pnlPercent);
-            
-            container.innerHTML = performers.slice(0, 5).map((token, index) => {
-                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '🏅';
-                
-                return `
-                    <div class="distribution-item">
-                        <div class="distribution-token">
-                            <span>${medal}</span>
-                            <img src="${token.iconUrl}" style="width: 24px; height: 24px; border-radius: 50%;">
-                            <span>${token.symbol}</span>
-                        </div>
-                        <div style="text-align: right; color: ${token.pnlPercent >= 0 ? 'var(--success)' : 'var(--danger)'};">
-                            ${token.pnlPercent >= 0 ? '+' : ''}${token.pnlPercent.toFixed(2)}%
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-        
-        function updateRecommendations() {
-            const container = document.getElementById('recommendations');
-            const recommendations = [];
-            
-            // Analyze portfolio
-            const totalValue = portfolio.reduce((sum, token) => sum + (token.amount * token.currentPrice), 0);
-            const avgPnl = portfolio.reduce((sum, token) => {
-                const pnl = ((token.amount * token.currentPrice) - token.totalInvested) / token.totalInvested * 100;
-                return sum + pnl;
-            }, 0) / (portfolio.length || 1);
-            
-            // Generate recommendations
-            if (portfolio.length < 3) {
-                recommendations.push({
-                    type: 'info',
-                    title: 'Диверсификация',
-                    description: 'Рекомендуется иметь минимум 3-5 токенов в портфеле'
-                });
-            }
-            
-            if (avgPnl > 50) {
-                recommendations.push({
-                    type: 'warning',
-                    title: 'Фиксация прибыли',
-                    description: 'Средняя прибыль >50%. Рассмотрите частичную фиксацию'
-                });
-            }
-            
-            if (avgPnl < -20) {
-                recommendations.push({
-                    type: 'info',
-                    title: 'Усреднение позиций',
-                    description: 'Возможность для DCA стратегии при низких ценах'
-                });
-            }
-            
-            const hasStopLoss = portfolio.filter(t => t.stopLoss > 0).length;
-            if (hasStopLoss < portfolio.length / 2) {
-                recommendations.push({
-                    type: 'warning',
-                    title: 'Риск-менеджмент',
-                    description: 'Установите Stop-Loss для защиты капитала'
-                });
-            }
-            
-            if (recommendations.length === 0) {
-                recommendations.push({
-                    type: 'success',
-                    title: 'Отличная работа!',
-                    description: 'Ваш портфель хорошо сбалансирован'
-                });
-            }
-            
-            container.innerHTML = recommendations.map(rec => `
-                <div class="alert-item ${rec.type}" style="margin-bottom: 10px;">
-                    <div class="alert-icon">💡</div>
-                    <div class="alert-content">
-                        <div class="alert-title">${rec.title}</div>
-                        <div class="alert-description">${rec.description}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-        
-        // ==================== Data Export ====================
-        function exportData() {
-            const data = {
-                portfolio,
-                history,
-                alerts,
-                exportDate: new Date().toISOString()
-            };
-            
-            const csv = convertToCSV(portfolio);
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `crypto-portfolio-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            
-            showNotification('Данные экспортированы', 'success');
-        }
-        
-        function convertToCSV(data) {
-            const headers = ['Symbol', 'Name', 'Amount', 'Buy Price', 'Current Price', 'Value', 'P&L', 'P&L %'];
-            const rows = data.map(token => {
-                const value = token.amount * token.currentPrice;
-                const pnl = value - token.totalInvested;
-                const pnlPercent = (pnl / token.totalInvested * 100).toFixed(2);
-                
-                return [
-                    token.symbol,
-                    token.name,
-                    token.amount,
-                    token.avgPrice,
-                    token.currentPrice,
-                    value.toFixed(2),
-                    pnl.toFixed(2),
-                    pnlPercent
-                ];
+            // Top performers
+            const sorted = [...portfolio].sort((a, b) => {
+                const aPnl = ((a.amount * a.currentPrice) - a.totalInvested) / a.totalInvested * 100;
+                const bPnl = ((b.amount * b.currentPrice) - b.totalInvested) / b.totalInvested * 100;
+                return bPnl - aPnl;
             });
             
-            return [headers, ...rows].map(row => row.join(',')).join('\n');
+            content.innerHTML = `
+                <div style="padding: 15px;">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">📊 Распределение</h3>
+                    ${portfolio.map(token => {
+                        const value = token.amount * token.currentPrice;
+                        const percent = (value / totalValue * 100).toFixed(1);
+                        return `
+                            <div style="margin-bottom: 10px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span>${token.symbol}</span>
+                                    <span>${percent}%</span>
+                                </div>
+                                <div style="height: 4px; background: var(--border-color); border-radius: 2px;">
+                                    <div style="width: ${percent}%; height: 100%; background: var(--primary); border-radius: 2px;"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                    
+                    <h3 style="font-size: 16px; margin: 20px 0 15px;">🏆 Топ performers</h3>
+                    ${sorted.slice(0, 3).map((token, i) => {
+                        const pnl = ((token.amount * token.currentPrice) - token.totalInvested) / token.totalInvested * 100;
+                        const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
+                        return `
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                <span>${medal} ${token.symbol}</span>
+                                <span class="${pnl >= 0 ? 'text-success' : 'text-danger'}">
+                                    ${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}%
+                                </span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
         }
         
-        // ==================== Notifications ====================
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            const icon = type === 'success' ? '✓' : type === 'error' ? '✗' : type === 'warning' ? '⚠' : 'ℹ';
+        // ==================== Export ====================
+        function exportData() {
+            const csv = [
+                ['Symbol', 'Amount', 'Buy Price', 'Current Price', 'Value', 'P&L'],
+                ...portfolio.map(t => [
+                    t.symbol,
+                    t.amount,
+                    t.avgPrice,
+                    t.currentPrice,
+                    (t.amount * t.currentPrice).toFixed(2),
+                    ((t.amount * t.currentPrice) - t.totalInvested).toFixed(2)
+                ])
+            ].map(row => row.join(',')).join('\n');
             
-            document.getElementById('notificationIcon').textContent = icon;
-            document.getElementById('notificationTitle').textContent = 
-                type === 'success' ? 'Успешно' : 
-                type === 'error' ? 'Ошибка' : 
-                type === 'warning' ? 'Внимание' : 'Информация';
-            document.getElementById('notificationMessage').textContent = message;
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `portfolio-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
             
-            notification.className = `notification show ${type}`;
+            showToast('Данные экспортированы');
+        }
+        
+        // ==================== Toast ====================
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
             
             setTimeout(() => {
-                notification.classList.remove('show');
-            }, 4000);
+                toast.classList.remove('show');
+            }, 3000);
         }
         
-        // ==================== Utility Functions ====================
-        function getTimeAgo(date) {
-            const seconds = Math.floor((new Date() - date) / 1000);
-            
-            if (seconds < 60) return 'только что';
-            if (seconds < 3600) return `${Math.floor(seconds / 60)} мин. назад`;
-            if (seconds < 86400) return `${Math.floor(seconds / 3600)} ч. назад`;
-            if (seconds < 604800) return `${Math.floor(seconds / 86400)} д. назад`;
-            
-            return date.toLocaleDateString('ru-RU');
-        }
-        
-        // ==================== Local Storage ====================
+        // ==================== Storage ====================
         function saveData() {
             const data = {
                 portfolio,
                 alerts,
                 history,
                 nextTokenId,
-                version: '2.0'
+                version: '3.0'
             };
-            localStorage.setItem('cryptoTrackerPro', JSON.stringify(data));
+            localStorage.setItem('goldDiggerData', JSON.stringify(data));
         }
         
         function loadData() {
-            const saved = localStorage.getItem('cryptoTrackerPro');
-            
+            const saved = localStorage.getItem('goldDiggerData');
             if (saved) {
                 try {
                     const data = JSON.parse(saved);
@@ -2330,20 +1512,10 @@
                     history = data.history || [];
                     nextTokenId = data.nextTokenId || 1;
                 } catch (e) {
-                    console.error('Error loading data:', e);
+                    console.error('Load error:', e);
                 }
             }
-            
-            // Load theme
-            currentTheme = localStorage.getItem('cryptoTheme') || 'light';
         }
-        
-        // ==================== Cleanup ====================
-        window.addEventListener('beforeunload', () => {
-            if (autoUpdateInterval) {
-                clearInterval(autoUpdateInterval);
-            }
-        });
     </script>
 </body>
 </html>
