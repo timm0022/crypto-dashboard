@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Crypto Dashboard v5</title>
+    <title>Crypto Dashboard v6</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -157,12 +157,8 @@
                     root.style.setProperty('--text-color', '#ffffff');
                     root.style.setProperty('--gray', '#7a8999');
                 }
-                if (tg.BackButton.isVisible) {
-                    tg.BackButton.hide();
-                }
-            } catch (e) {
-                console.error("Telegram WebApp script not found.", e);
-            }
+                if (tg.BackButton.isVisible) tg.BackButton.hide();
+            } catch (e) { console.error("Telegram WebApp script not found.", e); }
             loadData();
             updateDisplay();
             syncPrices();
@@ -194,9 +190,7 @@
             document.getElementById('tokenStopLoss').value = token.stopLoss || '';
             const dcaEditor = document.getElementById('dcaEditor');
             dcaEditor.innerHTML = '';
-            if (token.dcaPlan) {
-                token.dcaPlan.forEach(dca => addDcaRow(dca.condition, dca.amount));
-            }
+            if (token.dcaPlan) token.dcaPlan.forEach(dca => addDcaRow(dca.condition, dca.amount));
             document.getElementById('tokenModal').classList.add('active');
         }
 
@@ -208,18 +202,16 @@
             const editor = document.getElementById('dcaEditor');
             const row = document.createElement('div');
             row.className = 'dca-row';
-            row.innerHTML = `
-                <input type="text" class="dca-input" placeholder="Условие (напр. < 1.5$)" value="${condition}">
-                <input type="number" step="any" class="dca-input" placeholder="Сумма ($)" value="${amount}">
-                <button type="button" class="remove-dca-btn" onclick="this.parentElement.remove()">×</button>
-            `;
+            row.innerHTML = `<input type="text" class="dca-input" placeholder="Условие (< 1.5$)" value="${condition}"><input type="number" step="any" class="dca-input" placeholder="Сумма ($)" value="${amount}"><button type="button" class="remove-dca-btn" onclick="this.parentElement.remove()">×</button>`;
             editor.appendChild(row);
         }
 
-        function saveToken(event) {
+        // ### ИСПРАВЛЕННАЯ ФУНКЦИЯ ###
+        async function saveToken(event) {
             event.preventDefault();
             const editId = document.getElementById('editTokenId').value;
-            if (editId) {
+            
+            if (editId) { // Логика редактирования
                 const token = portfolio.find(t => t.id === parseInt(editId));
                 if (token) {
                     token.amount = parseFloat(document.getElementById('tokenAmount').value);
@@ -230,14 +222,12 @@
                     document.querySelectorAll('#dcaEditor .dca-row').forEach(row => {
                         const condition = row.children[0].value;
                         const amount = parseFloat(row.children[1].value);
-                        if (condition && amount > 0) {
-                            token.dcaPlan.push({ condition, amount });
-                        }
+                        if (condition && amount > 0) token.dcaPlan.push({ condition, amount });
                     });
                     showNotification('Токен успешно обновлен!', 'success');
                 }
-            } else {
-                 const coingeckoId = document.getElementById('coingeckoId').value;
+            } else { // Логика добавления
+                const coingeckoId = document.getElementById('coingeckoId').value;
                 if (!coingeckoId) {
                     showNotification('Пожалуйста, найдите и выберите токен.', 'warning');
                     return;
@@ -261,11 +251,11 @@
                 });
                 portfolio.push(token);
                 showNotification(`${token.symbol} добавлен в портфель`);
-                syncPrices();
             }
+            
             closeModal('tokenModal');
-            updateDisplay();
-            saveData();
+            // Мы вызываем обновление и сохранение ПОСЛЕ того, как дождались обновления цен
+            await syncPrices(); 
         }
 
         async function searchTokens() {
@@ -302,10 +292,7 @@
         }
 
         async function syncPrices() {
-            if (portfolio.length === 0) {
-                console.log("Портфель пуст, обновление цен не требуется.");
-                return; 
-            }
+            if (portfolio.length === 0) { console.log("Портфель пуст, обновление цен не требуется."); return; }
             const syncButton = document.getElementById('syncButton');
             syncButton.classList.add('loading');
             syncButton.textContent = '...';
@@ -334,11 +321,22 @@
         }
         
         function removeToken(tokenId) {
-            if (window.Telegram.WebApp.showConfirm('Вы уверены, что хотите удалить этот токен?')) {
-                portfolio = portfolio.filter(t => t.id !== tokenId);
-                updateDisplay();
-                saveData();
-                showNotification('Токен удален.', 'success');
+            try {
+                window.Telegram.WebApp.showConfirm('Вы уверены, что хотите удалить этот токен?', (confirmed) => {
+                    if (confirmed) {
+                        portfolio = portfolio.filter(t => t.id !== tokenId);
+                        updateDisplay();
+                        saveData();
+                        showNotification('Токен удален.', 'success');
+                    }
+                });
+            } catch (e) {
+                if (confirm('Вы уверены, что хотите удалить этот токен?')) {
+                    portfolio = portfolio.filter(t => t.id !== tokenId);
+                    updateDisplay();
+                    saveData();
+                    showNotification('Токен удален.', 'success');
+                }
             }
         }
 
@@ -394,6 +392,9 @@
         }
         
         function showNotification(message, type = 'success') {
+            try {
+                window.Telegram.WebApp.HapticFeedback.notificationOccurred(type);
+            } catch (e) { /* ignore */ }
             const notification = document.getElementById('notification');
             notification.textContent = message;
             notification.className = `notification show ${type}`;
@@ -401,11 +402,11 @@
         }
 
         function saveData() {
-            localStorage.setItem('cryptoDashboardV5', JSON.stringify({ portfolio, nextTokenId }));
+            localStorage.setItem('cryptoDashboardV6', JSON.stringify({ portfolio, nextTokenId }));
         }
 
         function loadData() {
-            let saved = localStorage.getItem('cryptoDashboardV5') || localStorage.getItem('cryptoDashboardV4');
+            let saved = localStorage.getItem('cryptoDashboardV6') || localStorage.getItem('cryptoDashboardV5') || localStorage.getItem('cryptoDashboardV4');
             if (saved) {
                 const data = JSON.parse(saved);
                 portfolio = data.portfolio || [];
